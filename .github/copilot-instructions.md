@@ -1,0 +1,12 @@
+- [x] Verify that the copilot-instructions.md file in the .github directory is created. Summary: file created and maintained.
+- [x] Clarify Project Requirements. Summary: Angular standalone retirement planner with Material, Reactive Forms, signals, and ECharts confirmed from user prompt.
+- [x] Scaffold the Project. Summary: Angular standalone workspace scaffolded in current directory.
+- [x] Customize the Project. Summary: implemented domain models, forecast service, multi-component stepper UI, chart/table outputs, and JSON import/export.
+- [x] Install Required Extensions. Summary: no setup-provided extension requirements.
+- [x] Compile the Project. Summary: dependencies installed and production build passes.
+- [x] Create and Run Task. Summary: existing Angular workspace tasks were generated in .vscode/tasks.json during scaffold.
+- [x] Launch the Project. Summary: launch configuration exists; ready for debug run on user confirmation.
+- [x] Ensure Documentation is Complete. Summary: README updated; this checklist cleaned and current.
+- Work through each checklist item systematically.
+- Keep communication concise and focused.
+- Follow development best practices.

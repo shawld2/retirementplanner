@@ -1,0 +1,159 @@
+<section class="section" [formGroup]="form()">
+  <h2>Portfolio Inputs</h2>
+
+  <mat-accordion multi>
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Me</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="addMeDb()">Add DB Pension</button>
+        <button mat-stroked-button type="button" (click)="addMeDc()">Add DC Pension</button>
+        <button mat-stroked-button type="button" (click)="addMeIsa()">Add ISA</button>
+      </div>
+
+      <h3>DC Pensions</h3>
+      <div formArrayName="mePensions" class="card-list">
+        @for (pot of mePensions.controls; track pot; let i = $index) {
+          @if (pot.value.type === 'DC') {
+            <div class="pot-card pot-card-dc" [formGroupName]="i">
+              <div class="grid">
+                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Employer contribution</mat-label><input matInput type="number" formControlName="employerContribution" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Tax-free %</mat-label><input matInput type="number" formControlName="taxFreePercentage" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <div class="remove-cell">
+                  <button mat-icon-button type="button" (click)="remove(mePensions, i)">
+                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <h3>DB Pensions</h3>
+      <div formArrayName="mePensions" class="card-list">
+        @for (pot of mePensions.controls; track pot; let i = $index) {
+          @if (pot.value.type === 'DB') {
+            <div class="pot-card pot-card-db" [formGroupName]="i">
+              <div class="grid">
+                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Pension start age</mat-label><input matInput type="number" formControlName="dbPensionAge" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Annual pension at start age</mat-label><input matInput type="number" formControlName="dbAnnualPension" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Lump sum at start age</mat-label><input matInput type="number" formControlName="dbLumpSum" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <div class="remove-cell">
+                  <button mat-icon-button type="button" (click)="remove(mePensions, i)">
+                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <h3>ISAs</h3>
+      <div formArrayName="meIsas" class="card-list">
+        @for (isa of meIsas.controls; track isa; let i = $index) {
+          <div class="pot-card pot-card-isa" [formGroupName]="i">
+            <div class="grid">
+              <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+              <div class="remove-cell">
+                <button mat-icon-button type="button" (click)="remove(meIsas, i)">
+                  <span class="remove-glyph" aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </mat-expansion-panel>
+
+    @if (includePartner()) {
+      <mat-expansion-panel expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Partner</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="actions">
+          <button mat-stroked-button type="button" (click)="addPartnerDb()">Add DB Pension</button>
+          <button mat-stroked-button type="button" (click)="addPartnerDc()">Add DC Pension</button>
+          <button mat-stroked-button type="button" (click)="addPartnerIsa()">Add ISA</button>
+        </div>
+
+        <h3>DC Pensions</h3>
+        <div formArrayName="partnerPensions" class="card-list">
+          @for (pot of partnerPensions.controls; track pot; let i = $index) {
+            @if (pot.value.type === 'DC') {
+              <div class="pot-card pot-card-dc" [formGroupName]="i">
+                <div class="grid">
+                  <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Employer contribution</mat-label><input matInput type="number" formControlName="employerContribution" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Tax-free %</mat-label><input matInput type="number" formControlName="taxFreePercentage" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                  <div class="remove-cell">
+                    <button mat-icon-button type="button" (click)="remove(partnerPensions, i)">
+                      <span class="remove-glyph" aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <h3>DB Pensions</h3>
+        <div formArrayName="partnerPensions" class="card-list">
+          @for (pot of partnerPensions.controls; track pot; let i = $index) {
+            @if (pot.value.type === 'DB') {
+              <div class="pot-card pot-card-db" [formGroupName]="i">
+                <div class="grid">
+                  <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Pension start age</mat-label><input matInput type="number" formControlName="dbPensionAge" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Annual pension at start age</mat-label><input matInput type="number" formControlName="dbAnnualPension" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Lump sum at start age</mat-label><input matInput type="number" formControlName="dbLumpSum" /></mat-form-field>
+                  <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                  <div class="remove-cell">
+                    <button mat-icon-button type="button" (click)="remove(partnerPensions, i)">
+                      <span class="remove-glyph" aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <h3>ISAs</h3>
+        <div formArrayName="partnerIsas" class="card-list">
+          @for (isa of partnerIsas.controls; track isa; let i = $index) {
+            <div class="pot-card pot-card-isa" [formGroupName]="i">
+              <div class="grid">
+                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <div class="remove-cell">
+                  <button mat-icon-button type="button" (click)="remove(partnerIsas, i)">
+                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </mat-expansion-panel>
+    }
+  </mat-accordion>
+</section>

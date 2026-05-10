@@ -1,0 +1,165 @@
+<section class="section" [formGroup]="form()">
+  <h2>Projection Settings</h2>
+
+  <div class="grid">
+    <div>
+      <label class="label">Inflation %</label>
+      <mat-slider min="0" max="10" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('inflationPercent', 2.5)"
+          (valueChange)="onSliderChange('inflationPercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>Inflation %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="inflationPercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
+      <label class="label">Global annual charges %</label>
+      <mat-slider min="0" max="5" step="0.05" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('globalChargesPercent', 0.2)"
+          (valueChange)="onSliderChange('globalChargesPercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>Global charges %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="globalChargesPercent" />
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="toggles-row">
+    <div class="toggle-card">
+      <label class="label">Return Scenario</label>
+      <mat-button-toggle-group formControlName="returnScenario">
+        <mat-button-toggle value="low">Low</mat-button-toggle>
+        <mat-button-toggle value="medium">Medium</mat-button-toggle>
+        <mat-button-toggle value="high">High</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <div class="toggle-card">
+      <label class="label">Drawdown Priority</label>
+      <mat-button-toggle-group formControlName="drawdownPriority">
+        <mat-button-toggle value="pension-first">Pension First</mat-button-toggle>
+        <mat-button-toggle value="isa-first">ISA First</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+  @if (includePartner()) {
+    <div class="split-row">
+      <label class="label">Drawdown split to me (%)</label>
+      <mat-slider min="0" max="100" step="1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('drawdownSplitToMePercent', 50)"
+          (valueChange)="onSliderChange('drawdownSplitToMePercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline" class="split-input">
+        <mat-label>Me %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="drawdownSplitToMePercent" />
+      </mat-form-field>
+      <p class="split-hint">Partner receives the remainder ({{ 100 - (form().get('drawdownSplitToMePercent')?.value ?? 50) }}%).</p>
+    </div>
+  }
+
+  <div class="rates" formGroupName="returnRates">
+    <mat-form-field appearance="outline">
+      <mat-label>Low return %</mat-label>
+      <input matInput type="number" min="0" max="100" formControlName="low" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Medium return %</mat-label>
+      <input matInput type="number" min="0" max="100" formControlName="medium" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>High return %</mat-label>
+      <input matInput type="number" min="0" max="100" formControlName="high" />
+    </mat-form-field>
+  </div>
+
+  <div class="mc-section">
+    <h3>Monte Carlo</h3>
+    <p class="mc-hint">Used by the Monte Carlo results tab. Volatility controls year-to-year randomness around the selected scenario return.</p>
+    <div class="mc-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Simulation runs</mat-label>
+        <input matInput type="number" min="100" max="5000" formControlName="monteCarloRuns" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Annual volatility %</mat-label>
+        <input matInput type="number" min="0" max="80" step="0.1" formControlName="monteCarloVolatilityPercent" />
+      </mat-form-field>
+    </div>
+
+    <div class="mc-options">
+      <mat-checkbox formControlName="monteCarloUseSeed">Use fixed random seed (reproducible runs)</mat-checkbox>
+      <p class="setting-hint">
+        Keeps the random sequence the same each time so you can compare scenarios without results changing on every run.
+      </p>
+      @if (form().get('monteCarloUseSeed')?.value) {
+        <mat-form-field appearance="outline" class="seed-input">
+          <mat-label>Random seed</mat-label>
+          <input matInput type="number" min="1" step="1" formControlName="monteCarloSeed" />
+        </mat-form-field>
+      }
+
+      <mat-checkbox formControlName="monteCarloUseWorker">Use worker mode for large simulations</mat-checkbox>
+      <p class="mc-worker-hint">Worker mode is applied when supported by your browser runtime.</p>
+    </div>
+  </div>
+
+  <mat-checkbox formControlName="applyPCLSLimit">Apply HMRC PCLS limit (simplified)</mat-checkbox>
+  <p class="setting-hint">
+    Caps tax-free cash at the simplified HMRC lifetime allowance used by the model, so large pension pots don’t generate unlimited PCLS.
+  </p>
+
+  <mat-checkbox formControlName="drawdownAmountsAreNet">
+    Drawdown amounts are <strong>net (after tax)</strong> — system will gross up withdrawals
+  </mat-checkbox>
+  <p class="setting-hint">
+    Use this if your target income is the amount you want to receive in hand; the model will calculate the larger gross withdrawal needed before tax.
+  </p>
+
+  <div class="tax-section">
+    <div class="tax-header">
+      <h3>Income Tax Bands</h3>
+      <button mat-stroked-button type="button" (click)="addTaxBand.emit()">Add Band</button>
+    </div>
+    <p class="tax-hint">Used to calculate tax on DB pension + state pension + taxable pot withdrawals. Bands are marginal — set the lower threshold and rate for each band.</p>
+    <div class="tax-bands-wrap" [formGroup]="form()">
+      <div class="tax-bands">
+      <div class="tax-band-row tax-band-header">
+        <span>From (£)</span>
+        <span>Rate (%)</span>
+        <span></span>
+      </div>
+      <div formArrayName="taxBands">
+        @for (band of taxBands().controls; track band; let i = $index) {
+          <div class="tax-band-row" [formGroupName]="i">
+            <mat-form-field appearance="outline">
+              <mat-label>From £</mat-label>
+              <input matInput type="number" formControlName="from" min="0" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Rate %</mat-label>
+              <input matInput type="number" formControlName="rate" min="0" max="100" />
+            </mat-form-field>
+            <button type="button" class="remove-btn" (click)="removeTaxBand.emit(i)">&times;</button>
+          </div>
+        }
+      </div>
+      </div>
+    </div>
+  </div>
+</section>

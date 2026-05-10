@@ -1,0 +1,169 @@
+<section class="summary-strip">
+  <div><strong>{{ summary().exhaustionText }}</strong></div>
+  <div>Total DB Income: {{ summary().totalDb | currency: 'GBP':'symbol':'1.0-0' }}</div>
+  <div>Total State Pension: {{ summary().totalState | currency: 'GBP':'symbol':'1.0-0' }}</div>
+  <div>Total Income Tax: {{ summary().totalTax | currency: 'GBP':'symbol':'1.0-0' }}</div>
+</section>
+
+<div class="table-wrap">
+  <div class="table-inner yearly-table">
+    <table mat-table [dataSource]="forecast()" class="forecast-table">
+    <ng-container matColumnDef="year">
+      <th mat-header-cell *matHeaderCellDef>Year</th>
+      <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="meAge">
+      <th mat-header-cell *matHeaderCellDef>My Age</th>
+      <td mat-cell *matCellDef="let row">{{ row.meAge }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="partnerAge">
+      <th mat-header-cell *matHeaderCellDef>Partner Age</th>
+      <td mat-cell *matCellDef="let row">{{ row.partnerAge ?? '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalPotValue">
+      <th mat-header-cell *matHeaderCellDef>Total Pot Value</th>
+      <td mat-cell *matCellDef="let row">{{ row.totalPotValue | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="dbIncome">
+      <th mat-header-cell *matHeaderCellDef>DB Income</th>
+      <td mat-cell *matCellDef="let row">{{ row.dbIncome | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="stateIncome">
+      <th mat-header-cell *matHeaderCellDef>State Pension</th>
+      <td mat-cell *matCellDef="let row">{{ row.stateIncome | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="drawdownTaken">
+      <th mat-header-cell *matHeaderCellDef>Drawdown Taken</th>
+      <td mat-cell *matCellDef="let row">{{ row.drawdownTaken | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="futureContributionsAdded">
+      <th mat-header-cell *matHeaderCellDef>Additional Contributions</th>
+      <td mat-cell *matCellDef="let row">{{ row.futureContributionsAdded | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSumsTaken">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsTaken | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSumsFromPension">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From Pensions</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromPension | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSumsFromIsa">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From ISAs</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="pclsConsumedThisYear">
+      <th mat-header-cell *matHeaderCellDef>Tax-Free Cash Used This Year</th>
+      <td mat-cell *matCellDef="let row">{{ row.pclsConsumedThisYear | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="meIncomeTax">
+      <th mat-header-cell *matHeaderCellDef>My Tax</th>
+      <td mat-cell *matCellDef="let row">{{ row.meIncomeTax | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="partnerIncomeTax">
+      <th mat-header-cell *matHeaderCellDef>Partner Tax</th>
+      <td mat-cell *matCellDef="let row">{{ row.partnerIncomeTax | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="incomeTax">
+      <th mat-header-cell *matHeaderCellDef>Household Tax</th>
+      <td mat-cell *matCellDef="let row">{{ row.incomeTax | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="netIncome">
+      <th mat-header-cell *matHeaderCellDef>Net Income</th>
+      <td mat-cell *matCellDef="let row">{{ row.netIncome | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="investmentGrowth">
+      <th mat-header-cell *matHeaderCellDef>Investment Growth</th>
+      <td mat-cell *matCellDef="let row">{{ row.investmentGrowth | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="closingTotalValue">
+      <th mat-header-cell *matHeaderCellDef>Closing Value</th>
+      <td mat-cell *matCellDef="let row">{{ row.closingTotalValue | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class]="rowClass(row)"></tr>
+    </table>
+  </div>
+</div>
+
+<p class="note">
+  Tax-Free Cash Used This Year includes tax-free cash from regular pension drawdown and pension lump-sum events.
+</p>
+
+<section class="pcls-section">
+  <div class="pcls-header">
+    <h3>
+      PCLS and Crystallisation by Pot
+      @if (selectedPclsYearRow(); as selectedYearRow) {
+        ({{ selectedYearRow.year }} / Age {{ selectedYearRow.meAge }})
+      }
+    </h3>
+
+    <mat-form-field appearance="outline" class="year-select">
+      <mat-label>Projection year</mat-label>
+      <mat-select
+        [value]="selectedPclsYearRow()?.year"
+        (selectionChange)="onPclsYearChange($event.value)"
+      >
+        @for (year of pclsYearOptions(); track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (pclsRows().length) {
+    <div class="table-wrap">
+      <div class="table-inner pcls-table">
+        <table mat-table [dataSource]="pclsRows()" class="forecast-table">
+        <ng-container matColumnDef="pot">
+          <th mat-header-cell *matHeaderCellDef>Pot</th>
+          <td mat-cell *matCellDef="let row">{{ row.pot }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="pclsWithdrawn">
+          <th mat-header-cell *matHeaderCellDef>Cumulative Tax-Free Cash Taken</th>
+          <td mat-cell *matCellDef="let row">{{ row.pclsWithdrawn | currency: 'GBP':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="remainingTaxFree">
+          <th mat-header-cell *matHeaderCellDef>Remaining Tax-Free Cash Available</th>
+          <td mat-cell *matCellDef="let row">{{ row.remainingTaxFree | currency: 'GBP':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="crystallised">
+          <th mat-header-cell *matHeaderCellDef>Cumulative Amount Crystallised</th>
+          <td mat-cell *matCellDef="let row">{{ row.crystallised | currency: 'GBP':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="pclsColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: pclsColumns"></tr>
+        </table>
+      </div>
+    </div>
+  } @else {
+    <p class="note">No DC pension pots available for PCLS/crystallisation analysis.</p>
+  }
+
+  <p class="note">
+    Values are cumulative to the selected year and include crystallisation created by regular pension drawdown, not only explicit lump-sum events.
+  </p>
+</section>

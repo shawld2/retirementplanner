@@ -1,0 +1,444 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+}
+
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-secondary;
+}
+
+// ============================================
+// Header
+// ============================================
+
+.header {
+  background: linear-gradient(135deg, $primary-main 0%, $primary-dark 100%);
+  padding: $padding-lg $padding-md;
+  margin-bottom: $spacing-8;
+  box-shadow: $shadow-md;
+  color: $text-on-primary;
+  position: sticky;
+  top: 0;
+  z-index: $z-fixed;
+
+  @media (min-width: $breakpoint-md) {
+    padding: $padding-xl $padding-lg;
+  }
+}
+
+.header-content {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-6;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: $gap-md;
+  text-decoration: none;
+  color: inherit;
+
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: $radius-lg;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .brand-text {
+    h1 {
+      margin: 0;
+      font-size: $font-2xl;
+      font-weight: $font-weight-bold;
+      color: inherit;
+    }
+
+    p {
+      margin: 0;
+      font-size: $font-sm;
+      opacity: 0.9;
+      color: inherit;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: $gap-md;
+
+  button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: $text-on-primary;
+    padding: 8px 16px;
+    border-radius: $radius-md;
+    cursor: pointer;
+    font-size: $font-sm;
+    font-weight: $font-weight-medium;
+    transition: all $transition-base;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.35);
+    }
+  }
+}
+
+.header-description {
+  font-size: $font-base;
+  line-height: $line-height-relaxed;
+  opacity: 0.95;
+  max-width: 600px;
+}
+
+// ============================================
+// Main Content Area
+// ============================================
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $padding-lg $padding-md;
+  box-sizing: border-box;
+  width: 100%;
+
+  @media (min-width: $breakpoint-md) {
+    padding: $padding-xl $padding-lg;
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    padding: $padding-2xl $padding-xl;
+  }
+}
+
+// ============================================
+// Stepper Section
+// ============================================
+
+.stepper-wrapper {
+  margin-bottom: $spacing-8;
+}
+
+.stepper-section {
+  background: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: 0;
+  overflow: hidden;
+}
+
+// ============================================
+// Stepper Customization
+// ============================================
+
+:host ::ng-deep {
+  .mat-horizontal-stepper-header-container {
+    background: linear-gradient(to right, $primary-lighter, rgba($primary-main, 0.05));
+    border-bottom: 1px solid $border-light;
+    padding: $spacing-4 !important;
+
+    @media (min-width: $breakpoint-md) {
+      padding: $spacing-6 $spacing-8 !important;
+    }
+  }
+
+  .mat-stepper-horizontal {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mat-step-header {
+    height: 72px;
+    padding: 0 $spacing-4 !important;
+
+    &:hover {
+      background: rgba($primary-main, 0.05);
+    }
+  }
+
+  .mat-step-header[aria-selected='true'] {
+    background: linear-gradient(135deg, $primary-lighter, rgba($secondary-teal, 0.1));
+    border-radius: $radius-lg;
+    box-shadow: 0 0 0 2px $primary-lighter;
+
+    .mat-step-label {
+      color: $primary-main !important;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  .mat-step-icon {
+    background-color: $gray-300 !important;
+    color: $white !important;
+    font-weight: $font-weight-bold;
+  }
+
+  .mat-step-icon.mat-step-icon-state-number {
+    background-color: $gray-300 !important;
+  }
+
+  .mat-step-header[aria-selected='true'] .mat-step-icon {
+    background: linear-gradient(135deg, $primary-main, $secondary-teal) !important;
+  }
+
+  .mat-step-label {
+    color: $text-secondary;
+    font-size: $font-base;
+    font-weight: $font-weight-medium;
+  }
+
+  .mat-horizontal-stepper-header:not(.mat-completed)
+    + .mat-horizontal-stepper-header::before {
+    background: linear-gradient(
+      to right,
+      $gray-300 0%,
+      $gray-300 30%,
+      transparent 70%,
+      $gray-300 100%
+    );
+    height: 2px;
+  }
+
+  .mat-mdc-tab-body-content {
+    padding: $padding-xl !important;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-tab-labels {
+    border-bottom: none !important;
+  }
+
+  .mat-step-content {
+    padding: $padding-lg $padding-md !important;
+
+    @media (min-width: $breakpoint-md) {
+      padding: $padding-xl $padding-lg !important;
+    }
+  }
+
+  .mat-horizontal-content-container {
+    overflow: hidden;
+    padding-top: 24px !important;
+  }
+}
+
+// ============________________________________
+// Summary Bar
+// ============================================
+
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: $gap-md;
+  margin-bottom: $spacing-8;
+  padding: $padding-lg;
+  background: linear-gradient(135deg, $primary-lighter 0%, rgba($secondary-teal, 0.1) 100%);
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+  box-shadow: $shadow-xs;
+
+  .summary-item {
+    .summary-label {
+      display: block;
+      font-size: $font-xs;
+      color: $text-tertiary;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-wide;
+      margin-bottom: $spacing-2;
+      font-weight: $font-weight-semibold;
+    }
+
+    .summary-value {
+      display: block;
+      font-size: $font-xl;
+      color: $primary-dark;
+      font-weight: $font-weight-bold;
+    }
+  }
+}
+
+// ============================================
+// Step Actions
+// ============================================
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $gap-md;
+  margin-top: $spacing-8;
+  padding-top: $spacing-6;
+  border-top: 1px solid $border-light;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// Results Section
+// ============================================
+
+.results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $gap-md;
+  margin-bottom: $spacing-8;
+}
+
+.monte-carlo-loading {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: $spacing-4;
+  margin: $spacing-4 0;
+  padding: $padding-2xl;
+  border-radius: $radius-xl;
+  border: 1px solid rgba($primary-main, 0.2);
+  background: linear-gradient(135deg, rgba($primary-lighter, 0.8), rgba($secondary-teal, 0.06));
+
+  h4 {
+    margin: 0;
+    color: $primary-dark;
+    font-size: $font-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: $font-base;
+  }
+}
+
+.loading-spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid rgba($primary-main, 0.2);
+  border-top-color: $primary-main;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.results-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $gap-lg;
+
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+// ============================================
+// Content Sections
+// ============================================
+
+.form-section {
+  background: $bg-primary;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  padding: $padding-lg;
+  margin-bottom: $spacing-6;
+  box-shadow: $shadow-xs;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: $gap-md;
+    margin-bottom: $spacing-6;
+    padding-bottom: $spacing-4;
+    border-bottom: 2px solid $border-light;
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient($primary-main, $secondary-teal);
+      border-radius: $radius-lg;
+      color: $text-on-primary;
+      font-size: $font-xl;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: $font-lg;
+      color: $text-primary;
+    }
+  }
+}
+
+// ============================================
+// Responsive Design
+// ============================================
+
+@media (max-width: $breakpoint-sm) {
+  .main-content {
+    padding: $padding-md;
+  }
+
+  .step-actions {
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .mat-horizontal-stepper-header-container {
+    padding: $spacing-2 !important;
+    overflow-x: auto;
+  }
+
+  :host ::ng-deep .mat-step-header {
+    min-width: auto !important;
+    padding: 0 $spacing-2 !important;
+  }
+
+  :host ::ng-deep .mat-step-label {
+    font-size: $font-xs;
+  }
+}

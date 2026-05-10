@@ -1,0 +1,60 @@
+@if (result(); as mc) {
+  <section class="mc-summary">
+    <div>
+      <strong>Runs:</strong> {{ mc.runs | number }}
+    </div>
+    <div>
+      <strong>Success probability:</strong> {{ mc.successProbability | percent:'1.1-1' }}
+    </div>
+    <div>
+      <strong>Final balance {{ percentileSummaryLabel() }}:</strong>
+      {{ percentileSummaryValues() }}
+    </div>
+    <div>
+      <strong>Mode:</strong> {{ mc.modeUsed === 'worker' ? 'Worker' : 'Main thread' }}
+      @if (mc.seedUsed !== undefined) {
+        (seed {{ mc.seedUsed }})
+      }
+      @if (mc.workerRequested && mc.modeUsed !== 'worker') {
+        <span> - worker requested, using main-thread fallback.</span>
+      }
+    </div>
+    @if (mc.medianFailureAge !== undefined) {
+      <div>
+        <strong>Median failure age (for failed runs):</strong>
+        {{ mc.medianFailureAge | number:'1.0-0' }}
+      </div>
+    }
+  </section>
+
+  <div class="mc-toolbar">
+    <strong>Percentile bands</strong>
+    <span
+      class="help-chip"
+      role="img"
+      aria-label="Percentile help"
+      title="P50 is the median. P10/P90 shows the middle 80% of outcomes. P5/P95 shows the middle 90% and includes more tail risk/opportunity."
+    >
+      ?
+    </span>
+    <mat-button-toggle-group
+      [value]="percentileView()"
+      (change)="percentileView.set($event.value)"
+      aria-label="Percentile band toggle"
+    >
+      <mat-button-toggle value="p10-90">P10 / P50 / P90</mat-button-toggle>
+      <mat-button-toggle value="p5-95">P5 / P25 / P50 / P75 / P95</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="chart-wrap" echarts [options]="fanChartOptions()" [autoResize]="true"></div>
+
+  <p class="threshold-note">{{ percentileThresholdHint() }}</p>
+
+  <h4 class="hist-title">Final Balance Distribution</h4>
+  <div class="histogram-wrap" echarts [options]="histogramOptions()" [autoResize]="true"></div>
+
+  <p class="mc-note">
+    Monte Carlo randomizes annual returns around the selected scenario mean using your volatility setting.
+  </p>
+}

@@ -1,0 +1,95 @@
+// Import design system
+@use 'styles/variables' as *;
+@use 'styles/layout' as *;
+@use 'styles/components' as *;
+
+// Material theme
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	min-height: 100%;
+	font-family: $font-family-base;
+	color: $text-primary;
+	background: $bg-secondary;
+	line-height: $line-height-normal;
+}
+
+// Ensure consistent typography across Material components
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.mat-typography,
+.mat-mdc-form-field,
+.mat-step-label,
+.mat-expansion-panel-header,
+.mat-mdc-tab,
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-icon-button,
+.mdc-button__label,
+.mat-mdc-form-field-input-control,
+.mat-mdc-select-value,
+.mat-mdc-select-min-line,
+.mat-step-text-label {
+	font-family: $font-family-base !important;
+}
+
+// Material component customization
+.mat-mdc-button {
+	&.mat-primary {
+		background-color: $primary-main !important;
+	}
+}
+
+.mat-mdc-outlined-button {
+	border-color: $primary-main !important;
+	color: $primary-main !important;
+
+	&:hover {
+		background-color: $primary-lighter;
+	}
+}
+
+.mat-mdc-form-field {
+	.mat-mdc-form-field-label {
+		color: $text-secondary !important;
+	}
+
+	&.mat-focused {
+		.mat-mdc-form-field-label {
+			color: $primary-main !important;
+		}
+	}
+}
+
+.mdc-text-field--filled {
+	background-color: $bg-primary !important;
+
+	&:hover {
+		background-color: $bg-tertiary !important;
+	}
+}
+
+.mat-mdc-tab {
+	&.mat-mdc-tab-active {
+		.mat-mdc-tab-labels-content {
+			color: $primary-main !important;
+		}
+	}
+}
+
+.mat-stepper-horizontal,
+.mat-stepper-vertical {
+	background: transparent;
+}

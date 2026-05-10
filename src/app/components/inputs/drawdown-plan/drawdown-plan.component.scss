@@ -1,0 +1,117 @@
+.section {
+  display: grid;
+  gap: 1rem;
+}
+
+.subhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.row mat-form-field {
+  margin: 0;
+  min-width: 0;
+}
+
+.field-label {
+  flex: 1 1 220px;
+  max-width: 280px;
+}
+
+.field-age {
+  flex: 0 0 120px;
+}
+
+.field-amount {
+  flex: 0 0 150px;
+}
+
+.field-source {
+  flex: 0 0 180px;
+}
+
+.field-amount-wide {
+  flex: 0 0 190px;
+}
+
+.field-source-wide {
+  flex: 1 1 260px;
+  max-width: 320px;
+}
+
+.num-input {
+  font-size: 0.95rem;
+}
+
+.helper {
+  margin: 0;
+  color: #4b5563;
+}
+
+.row ::ng-deep .mat-mdc-form-field-subscript-wrapper,
+.row ::ng-deep .mat-mdc-form-field-bottom-align::before {
+  display: none !important;
+  height: 0 !important;
+}
+
+.row ::ng-deep .mat-mdc-form-field-wrapper,
+.row ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.row ::ng-deep .mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
+.row ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 40px;
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+
+.remove-btn {
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #555;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  justify-self: end;
+}
+
+@media (max-width: 720px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .row mat-form-field {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .remove-btn {
+    justify-self: start;
+  }
+}

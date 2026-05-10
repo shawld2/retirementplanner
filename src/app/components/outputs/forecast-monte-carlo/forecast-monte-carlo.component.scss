@@ -1,0 +1,58 @@
+.mc-summary {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #efe8db, #dbeafe);
+}
+
+.chart-wrap {
+  height: min(56vh, 520px);
+  width: 100%;
+}
+
+.mc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.6rem;
+}
+
+.help-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  cursor: help;
+  user-select: none;
+}
+
+.hist-title {
+  margin: 0.75rem 0 0.45rem;
+}
+
+.threshold-note {
+  margin: 0.55rem 0 0.25rem;
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.histogram-wrap {
+  height: min(38vh, 320px);
+  width: 100%;
+}
+
+.mc-note {
+  margin-top: 0.6rem;
+  color: #475569;
+  font-size: 0.85rem;
+}

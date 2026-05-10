@@ -1,0 +1,80 @@
+<section class="section" [formGroup]="form()">
+  <h2>Drawdown Plan</h2>
+
+  <div class="subhead">
+    <h3>Lump Sums</h3>
+    <button mat-stroked-button type="button" (click)="addLumpSum()">Add Lump Sum</button>
+  </div>
+  <p class="helper">Tax is calculated automatically from source withdrawals (ISA tax-free, pension withdrawals taxable).</p>
+
+  <div formArrayName="lumpSums" class="card-list">
+    @for (row of lumpSums.controls; track row; let i = $index) {
+      <div class="row" [formGroupName]="i">
+        <mat-form-field appearance="outline" class="field-label"><mat-label>Label</mat-label><input matInput formControlName="label" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-amount"><mat-label>Amount</mat-label><input matInput class="num-input" type="number" formControlName="amount" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-source">
+          <mat-label>Source</mat-label>
+          <mat-select formControlName="fromSource">
+            <mat-option value="any">Any (largest first)</mat-option>
+            @for (source of sourceOptions(); track source.id) {
+              <mat-option [value]="source.id">{{ source.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button type="button" class="remove-btn" (click)="remove(lumpSums, i)">&times;</button>
+      </div>
+    }
+  </div>
+
+  <div class="subhead">
+    <h3>Future Contributions</h3>
+    <button mat-stroked-button type="button" (click)="addFutureContribution()">Add Contribution</button>
+  </div>
+  <p class="helper">Use this for one-off additions like inheritance or house sale proceeds.</p>
+
+  <div formArrayName="futureContributions" class="card-list">
+    @for (row of futureContributions.controls; track row; let i = $index) {
+      <div class="row" [formGroupName]="i">
+        <mat-form-field appearance="outline" class="field-label"><mat-label>Label</mat-label><input matInput formControlName="label" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-amount"><mat-label>Amount</mat-label><input matInput class="num-input" type="number" formControlName="amount" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-source">
+          <mat-label>To source</mat-label>
+          <mat-select formControlName="toSource">
+            <mat-option value="any">Any (largest eligible)</mat-option>
+            @for (source of sourceOptions(); track source.id) {
+              <mat-option [value]="source.id">{{ source.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button type="button" class="remove-btn" (click)="remove(futureContributions, i)">&times;</button>
+      </div>
+    }
+  </div>
+
+  <div class="subhead">
+    <h3>Annual Drawdown Schedule</h3>
+    <button mat-stroked-button type="button" (click)="addDrawdownRow()">Add Phase</button>
+  </div>
+  <p class="helper">Between defined ages the annual amount transitions linearly.</p>
+
+  <div formArrayName="drawdownSchedule" class="card-list">
+    @for (row of drawdownSchedule.controls; track row; let i = $index) {
+      <div class="row" [formGroupName]="i">
+        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-amount-wide"><mat-label>Annual Amount (today)</mat-label><input matInput class="num-input" type="number" formControlName="annualAmount" /></mat-form-field>
+        <mat-form-field appearance="outline" class="field-source-wide">
+          <mat-label>Source</mat-label>
+          <mat-select formControlName="fromSource">
+            <mat-option value="proportional">Proportional across eligible pots</mat-option>
+            @for (source of sourceOptions(); track source.id) {
+              <mat-option [value]="source.id">{{ source.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button type="button" class="remove-btn" (click)="remove(drawdownSchedule, i)">&times;</button>
+      </div>
+    }
+  </div>
+</section>

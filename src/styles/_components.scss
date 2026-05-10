@@ -1,0 +1,507 @@
+@use 'sass:color';
+@use './variables' as *;
+
+// ============================================
+// Card Component Styles
+// ============================================
+
+.card {
+  @include card-base;
+  padding: $padding-lg;
+  margin-bottom: $spacing-6;
+
+  &.card-elevated {
+    box-shadow: $shadow-md;
+
+    &:hover {
+      box-shadow: $shadow-lg;
+    }
+  }
+
+  &.card-flat {
+    box-shadow: $shadow-none;
+    border-color: $border-light;
+
+    &:hover {
+      box-shadow: $shadow-sm;
+    }
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: $gap-md;
+  margin-bottom: $spacing-4;
+  padding-bottom: $spacing-4;
+  border-bottom: 1px solid $border-light;
+
+  .card-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $primary-lighter;
+    border-radius: $radius-md;
+    color: $primary-main;
+    font-size: $font-lg;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: $font-lg;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  .card-subtitle {
+    margin: 0;
+    font-size: $font-sm;
+    color: $text-tertiary;
+  }
+}
+
+// ============================================
+// Button Styles
+// ============================================
+
+.btn {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $gap-sm;
+  padding: 10px 16px;
+  font-family: $font-family-base;
+  font-size: $font-base;
+  font-weight: $font-weight-medium;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  @include smooth-transition();
+  white-space: nowrap;
+
+  // Sizes
+  &.btn-large {
+    padding: 12px 24px;
+    font-size: $font-lg;
+    min-height: 48px;
+  }
+
+  &.btn-small {
+    padding: 8px 12px;
+    font-size: $font-sm;
+    min-height: 32px;
+  }
+
+  &.btn-icon-only {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+
+  // Primary Button
+  &.btn-primary {
+    background: $primary-main;
+    color: $text-on-primary;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+      background: $primary-dark;
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: $shadow-xs;
+    }
+
+    &:disabled {
+      background: $gray-300;
+      color: $gray-500;
+      cursor: not-allowed;
+      box-shadow: $shadow-none;
+      transform: none;
+    }
+  }
+
+  // Secondary Button
+  &.btn-secondary {
+    background: transparent;
+    color: $primary-main;
+    border: 2px solid $primary-main;
+
+    &:hover {
+      background: $primary-lighter;
+      border-color: $primary-dark;
+      color: $primary-dark;
+    }
+
+    &:active {
+      background: $primary-light;
+    }
+
+    &:disabled {
+      border-color: $gray-300;
+      color: $gray-400;
+      cursor: not-allowed;
+    }
+  }
+
+  // Success Button
+  &.btn-success {
+    background: $success;
+    color: $text-on-primary;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+      background: color.scale($success, $lightness: -5%);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  // Danger/Destructive Button
+  &.btn-danger {
+    background: transparent;
+    color: $error;
+    border: 2px solid $error;
+
+    &:hover {
+      background: rgba($error, 0.1);
+      border-color: color.scale($error, $lightness: -5%);
+    }
+  }
+
+  // Ghost Button (Minimal)
+  &.btn-ghost {
+    background: transparent;
+    color: $text-secondary;
+    border: none;
+
+    &:hover {
+      background: $bg-tertiary;
+      color: $text-primary;
+    }
+  }
+
+  // Icon Button
+  &.btn-icon {
+    background: transparent;
+    color: $text-secondary;
+    border: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+}
+
+// Button Group
+.btn-group {
+  display: flex;
+  gap: $gap-sm;
+  flex-wrap: wrap;
+}
+
+// ============================================
+// Form Styles
+// ============================================
+
+.form-group {
+  margin-bottom: $spacing-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $gap-lg;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.form-row-2 {
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &.form-row-full {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: $gap-sm;
+  font-size: $font-sm;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+  margin-bottom: $spacing-2;
+
+  .required {
+    color: $error;
+  }
+
+  .info-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $primary-lighter;
+    border-radius: $radius-full;
+    color: $primary-main;
+    font-size: 12px;
+    cursor: help;
+  }
+}
+
+.form-hint {
+  font-size: $font-xs;
+  color: $text-tertiary;
+  margin-top: $spacing-2;
+  font-style: italic;
+}
+
+.form-error {
+  font-size: $font-xs;
+  color: $error;
+  margin-top: $spacing-2;
+  display: flex;
+  align-items: center;
+  gap: $gap-xs;
+
+  &::before {
+    content: '⚠';
+    display: inline-block;
+  }
+}
+
+.form-success {
+  font-size: $font-xs;
+  color: $success;
+  margin-top: $spacing-2;
+  display: flex;
+  align-items: center;
+  gap: $gap-xs;
+
+  &::before {
+    content: '✓';
+    display: inline-block;
+    font-weight: bold;
+  }
+}
+
+// ============================================
+// Input Field Styling
+// ============================================
+
+.input-field {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: $font-family-base;
+  font-size: $font-base;
+  line-height: $line-height-normal;
+  color: $text-primary;
+  background: $bg-primary;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+
+  &:hover {
+    border-color: $border-dark;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary-main;
+    box-shadow: 0 0 0 3px rgba($primary-main, 0.1);
+  }
+
+  &:disabled {
+    background: $bg-tertiary;
+    border-color: $border-light;
+    color: $text-muted;
+    cursor: not-allowed;
+  }
+
+  &.input-error {
+    border-color: $error;
+    background: rgba($error, 0.02);
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($error, 0.1);
+    }
+  }
+
+  &.input-success {
+    border-color: $success;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($success, 0.1);
+    }
+  }
+}
+
+// ============================================
+// Section Styles
+// ============================================
+
+.section {
+  margin-bottom: $spacing-8;
+  padding: $padding-lg;
+  background: $bg-primary;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: $gap-md;
+  margin: 0 0 $spacing-6 0;
+  font-size: $font-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient($primary-main, $primary-dark);
+    border-radius: $radius-md;
+    color: $text-on-primary;
+    font-size: $font-xl;
+  }
+}
+
+.section-subtitle {
+  margin: $spacing-4 0 0 0;
+  font-size: $font-sm;
+  color: $text-tertiary;
+}
+
+// ============================================
+// Badge Styles
+// ============================================
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $gap-xs;
+  padding: 4px 12px;
+  font-size: $font-xs;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-full;
+  white-space: nowrap;
+
+  &.badge-primary {
+    background: $primary-lighter;
+    color: $primary-dark;
+  }
+
+  &.badge-success {
+    background: rgba($success, 0.1);
+    color: color.scale($success, $lightness: -10%);
+  }
+
+  &.badge-warning {
+    background: rgba($warning, 0.1);
+    color: color.scale($warning, $lightness: -10%);
+  }
+
+  &.badge-error {
+    background: rgba($error, 0.1);
+    color: $error;
+  }
+}
+
+// ============================================
+// Alert/Message Styles
+// ============================================
+
+.alert {
+  display: flex;
+  gap: $gap-md;
+  padding: $padding-md;
+  border-radius: $radius-md;
+  border-left: 4px solid;
+  animation: slideIn $transition-base ease-out;
+
+  &.alert-info {
+    background: rgba($info, 0.05);
+    border-color: $info;
+    color: color.scale($info, $lightness: -20%);
+  }
+
+  &.alert-success {
+    background: rgba($success, 0.05);
+    border-color: $success;
+    color: color.scale($success, $lightness: -20%);
+  }
+
+  &.alert-warning {
+    background: rgba($warning, 0.05);
+    border-color: $warning;
+    color: color.scale($warning, $lightness: -20%);
+  }
+
+  &.alert-error {
+    background: rgba($error, 0.05);
+    border-color: $error;
+    color: $error;
+  }
+
+  .alert-icon {
+    flex-shrink: 0;
+    font-size: $font-lg;
+    margin-top: 2px;
+  }
+
+  .alert-content {
+    flex: 1;
+    font-size: $font-sm;
+    line-height: $line-height-snug;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

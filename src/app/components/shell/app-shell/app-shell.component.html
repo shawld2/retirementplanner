@@ -1,0 +1,163 @@
+<div class="shell">
+  <!-- Professional Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="header-brand">
+          <div class="brand-icon">💰</div>
+          <div class="brand-text">
+            <h1>RetirementPlanner</h1>
+            <p>Professional Financial Forecasting</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" (click)="fileInput.click()" title="Import your saved plan">
+            ↓ Import
+          </button>
+          <button type="button" (click)="exportToJson()" title="Export your plan">
+            ↑ Export
+          </button>
+          <input #fileInput type="file" accept="application/json" hidden (change)="importFromJson($event)" />
+        </div>
+      </div>
+      <div class="header-description">
+        Model DC, DB, and ISA outcomes for two people with scenario-based drawdown planning.
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="stepper-wrapper">
+      <div class="stepper-section">
+        <mat-stepper linear>
+          <ng-template matStepperIcon="edit">
+            <span class="step-icon-text" aria-hidden="true">✏️</span>
+          </ng-template>
+          <ng-template matStepperIcon="done">
+            <span class="step-icon-text" aria-hidden="true">✓</span>
+          </ng-template>
+
+          <!-- Step 1: Personal Details -->
+          <mat-step [stepControl]="personalGroup" label="Personal">
+            <app-personal-inputs [form]="personalGroup" />
+            <div class="step-actions">
+              <button mat-flat-button matStepperNext color="primary">Next</button>
+            </div>
+          </mat-step>
+
+          <!-- Step 2: Portfolio -->
+          <mat-step [stepControl]="portfolioGroup" label="Portfolio">
+            <app-portfolio-inputs [form]="portfolioGroup" [includePartner]="includePartner" />
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-flat-button matStepperNext color="primary">Next</button>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Projection Settings -->
+          <mat-step [stepControl]="settingsGroup" label="Projection Settings">
+            <app-projection-settings
+              [form]="settingsGroup"
+              [includePartner]="includePartner"
+              [taxBands]="taxBandsArray"
+              (addTaxBand)="addTaxBand()"
+              (removeTaxBand)="removeTaxBand($event)"
+            />
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-flat-button matStepperNext color="primary">Next</button>
+            </div>
+          </mat-step>
+
+          <!-- Step 4: Drawdown Plan -->
+          <mat-step [stepControl]="drawdownGroup" label="Drawdown Plan">
+            <app-drawdown-plan [form]="drawdownGroup" [sourceOptions]="sourceOptions" />
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-flat-button matStepperNext color="primary">Next</button>
+            </div>
+          </mat-step>
+
+          <!-- Step 5: Results -->
+          <mat-step label="Results">
+            <!-- Summary KPIs -->
+            <section class="summary-bar">
+              <div class="summary-item">
+                <span class="summary-label">Status</span>
+                <span class="summary-value">{{ summary().exhaustion }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Lifetime DB Pension</span>
+                <span class="summary-value">{{ summary().totalDb | currency:'GBP':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Lifetime State Pension</span>
+                <span class="summary-value">{{ summary().totalState | currency:'GBP':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Strategy</span>
+                <span class="summary-value">{{ drawdownPriorityLabel }}</span>
+              </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="results-actions">
+              <button mat-flat-button color="primary" type="button" (click)="recalculate()">
+                🔄 Recalculate
+              </button>
+              <button mat-stroked-button type="button" (click)="exportToJson()">
+                📥 Export Inputs
+              </button>
+              <button mat-stroked-button type="button" (click)="fileInput.click()">
+                📤 Import Inputs
+              </button>
+            </div>
+
+            <!-- Results Tabs -->
+            <mat-tab-group>
+              <mat-tab label="📊 Forecast Chart">
+                <app-forecast-chart
+                  [forecast]="forecastRows()"
+                  [selectedScenario]="settingsGroup.value.returnScenario"
+                  [selectedDrawdownPriority]="settingsGroup.value.drawdownPriority"
+                  [meRetirementAge]="personalGroup.value.meRetirementAge"
+                  [partnerRetirementAge]="includePartner ? personalGroup.value.partnerRetirementAge : undefined"
+                  [statePersonAge]="personalGroup.value.statePersonAge"
+                  [statePartnerAge]="includePartner ? personalGroup.value.statePartnerAge : undefined"
+                  (scenarioChanged)="onScenarioChanged($event)"
+                  (drawdownPriorityChanged)="onDrawdownPriorityChanged($event)"
+                />
+              </mat-tab>
+              <mat-tab label="📋 Year-by-Year Table">
+                <app-forecast-table
+                  [forecast]="forecastRows()"
+                  [meRetirementAge]="personalGroup.value.meRetirementAge"
+                  [partnerRetirementAge]="includePartner ? personalGroup.value.partnerRetirementAge : undefined"
+                />
+              </mat-tab>
+              <mat-tab label="🎲 Monte Carlo Analysis">
+                @if (isMonteCarloCalculating()) {
+                  <section class="monte-carlo-loading" role="status" aria-live="polite">
+                    <div class="loading-spinner" aria-hidden="true"></div>
+                    <h4>Recalculating Monte Carlo Forecast</h4>
+                    <p>
+                      Updating success probability and percentile outcomes...
+                    </p>
+                  </section>
+                } @else if (monteCarloResult(); as result) {
+                  <app-forecast-monte-carlo [result]="result" />
+                }
+              </mat-tab>
+            </mat-tab-group>
+
+            <!-- Back Button -->
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+    </div>
+  </div>
+</div>
