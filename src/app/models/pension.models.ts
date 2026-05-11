@@ -188,6 +188,7 @@ export interface ForecastYear {
   lumpSumsFromPension: number;
   lumpSumsFromIsa: number;
   lumpSumsFromCashIsa: number;
+  lumpSumsFromDbPension: number;
   lumpSumsFromLisa: number;
   lumpSumsTaxable: number;
   pclsConsumedThisYear: number;

@@ -168,6 +168,7 @@ export class ForecastChartComponent {
           lines.push(`Lump Sums: ${this.formatCurrency(row.lumpSumsTaken)}`);
           lines.push(`  from Pensions: ${this.formatCurrency(row.lumpSumsFromPension)}`);
           lines.push(`  from ISAs: ${this.formatCurrency(row.lumpSumsFromIsa)}`);
+          lines.push(`  from DB Pension: ${this.formatCurrency(row.lumpSumsFromDbPension)}`);
           lines.push(`  from LISA: ${this.formatCurrency(row.lumpSumsFromLisa)}`);
           lines.push(`PCLS Consumed This Year: ${this.formatCurrency(row.pclsConsumedThisYear)}`);
           lines.push(`Taxable Withdrawals: ${this.formatCurrency(row.taxableWithdrawals)}`);

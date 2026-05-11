@@ -224,7 +224,7 @@ export class ForecastService {
 
       this.addContributions(pots, inputs, meAge, partnerAge);
 
-      pclsUsed = this.applyRetirementEvents(
+      const retirementEventsResult = this.applyRetirementEvents(
         pots,
         inputs,
         meAge,
@@ -234,6 +234,8 @@ export class ForecastService {
         crystallisedByPot,
         notes,
       );
+      pclsUsed = retirementEventsResult.pclsUsed;
+      const dbLumpSumTaken = retirementEventsResult.dbLumpSumTaken;
 
       const dbIncomeByOwner = this.calculateDbIncomeByOwner(
         inputs,
@@ -472,8 +474,8 @@ export class ForecastService {
       const incomeTax = meIncomeTax + partnerIncomeTax;
       const pclsConsumedThisYear = Math.max(0, pclsUsed - pclsUsedAtYearStart);
       const taxOnPotWithdrawals = Math.max(0, incomeTax - taxOnGuaranteedIncome);
-      const grossFromPots = drawdownResult.total + lumpSumResult.total;
-      const totalIncome = guaranteedIncome + drawdownResult.total + lumpSumResult.total;
+      const grossFromPots = drawdownResult.total + lumpSumResult.total + dbLumpSumTaken;
+      const totalIncome = guaranteedIncome + drawdownResult.total + lumpSumResult.total + dbLumpSumTaken;
       const netIncome = totalIncome - incomeTax;
 
       rows.push({
@@ -504,10 +506,11 @@ export class ForecastService {
         drawdownFromLisa: drawdownResult.bySourceType.lisa,
         drawdownTaxable: drawdownResult.taxable,
         futureContributionsAdded,
-        lumpSumsTaken: lumpSumResult.total,
+        lumpSumsTaken: lumpSumResult.total + dbLumpSumTaken,
         lumpSumsFromPension: lumpSumResult.bySourceType.pension,
         lumpSumsFromIsa: lumpSumResult.bySourceType.isa,
         lumpSumsFromCashIsa: lumpSumResult.bySourceType.cashIsa,
+        lumpSumsFromDbPension: dbLumpSumTaken,
         lumpSumsFromLisa: lumpSumResult.bySourceType.lisa,
         lumpSumsTaxable: lumpSumResult.taxable,
         pclsConsumedThisYear,
@@ -917,7 +920,26 @@ export class ForecastService {
     pclsWithdrawnByPot: Record<string, number>,
     crystallisedByPot: Record<string, number>,
     notes: string[],
-  ): number {
+  ): { pclsUsed: number; dbLumpSumTaken: number } {
+    let dbLumpSumTaken = 0;
+
+    for (const db of inputs.me.pensions.filter((p) => p.type === 'DB')) {
+      const dbStartAge = this.getDbPensionStartAge(db, inputs.me.retirementAge);
+      if (meAge !== dbStartAge) {
+        continue;
+      }
+
+      const dbLump = db.dbLumpSum ?? 0;
+      if (dbLump <= 0) {
+        continue;
+      }
+
+      const isa = this.ensureMeDbCashPot(pots);
+      isa.balance += dbLump;
+      dbLumpSumTaken += dbLump;
+      notes.push(`DB lump sum moved to cash ISA: ${Math.round(dbLump).toLocaleString()}`);
+    }
+
     if (inputs.partner && partnerAge !== undefined) {
       for (const db of inputs.partner.pensions.filter((p) => p.type === 'DB')) {
         const dbStartAge = this.getDbPensionStartAge(db, inputs.partner.retirementAge);
@@ -932,11 +954,35 @@ export class ForecastService {
 
         const isa = this.ensurePartnerDbCashPot(pots);
         isa.balance += dbLump;
+        dbLumpSumTaken += dbLump;
         notes.push(`Partner DB lump sum moved to cash ISA: ${Math.round(dbLump).toLocaleString()}`);
       }
     }
 
-    return pclsUsed;
+    return { pclsUsed, dbLumpSumTaken };
+  }
+
+  private ensureMeDbCashPot(pots: LiquidPotState[]): LiquidPotState {
+    const existing = pots.find((p) => p.id === 'me-db-lump-cash');
+    if (existing) {
+      return existing;
+    }
+
+    const created: LiquidPotState = {
+      id: 'me-db-lump-cash',
+      label: 'DB Lump Sum Cash ISA',
+      owner: 'me',
+      kind: 'isa',
+      sourceType: 'isa',
+      isaType: 'CASH_ISA',
+      balance: 0,
+      chargesPercent: 0,
+      annualContribution: 0,
+      taxFreePercentage: 0,
+    };
+
+    pots.push(created);
+    return created;
   }
 
   private ensurePartnerDbCashPot(pots: LiquidPotState[]): LiquidPotState {

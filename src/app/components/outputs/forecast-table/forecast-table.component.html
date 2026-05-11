@@ -122,6 +122,11 @@
       <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromCashIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="lumpSumsFromDbPension">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From DB Pension</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromDbPension | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="lumpSumsFromLisa">
       <th mat-header-cell *matHeaderCellDef>Lump Sums From LISA</th>
       <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromLisa | currency: 'GBP':'symbol':'1.0-0' }}</td>
