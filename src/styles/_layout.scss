@@ -11,24 +11,26 @@ body {
   line-height: $line-height-normal;
   color: $text-primary;
   background: $bg-secondary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1 {
-  margin: 0 0 $spacing-2 0;
+  margin: 0 0 $spacing-3 0;
   font-size: $font-3xl;
   line-height: $line-height-tight;
   font-weight: $font-weight-bold;
   color: $text-primary;
-  letter-spacing: $letter-spacing-tight;
+  letter-spacing: $letter-spacing-tighter;
 }
 
 h2 {
-  margin: 0 0 $spacing-4 0;
+  margin: 0 0 $spacing-5 0;
   font-size: $font-2xl;
   line-height: $line-height-snug;
   font-weight: $font-weight-bold;
   color: $text-primary;
-  letter-spacing: $letter-spacing-tight;
+  letter-spacing: $letter-spacing-tighter;
 }
 
 h3 {
@@ -459,11 +461,11 @@ em {
 }
 
 .text-teal {
-  color: $secondary-teal;
+  color: $accent-teal;
 }
 
 .text-emerald {
-  color: $secondary-emerald;
+  color: $success;
 }
 
 // ============================================

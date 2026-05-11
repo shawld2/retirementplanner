@@ -1,29 +1,59 @@
+@use 'styles/variables' as *;
+
 .section {
   display: grid;
-  gap: 1rem;
+  gap: $spacing-6;
+  padding: 0;
+  background: transparent;
+  border: none;
+
+  h2 {
+    margin: 0 0 $spacing-4 0;
+    font-size: $font-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    letter-spacing: $letter-spacing-tight;
+    padding-bottom: $spacing-4;
+    border-bottom: 2px solid $border-light;
+  }
+
+  h3 {
+    margin: $spacing-4 0 $spacing-3 0;
+    font-size: $font-lg;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
+  }
 }
 
 .subhead {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: $spacing-4;
 }
 
 .card-list {
   display: grid;
-  gap: 0.6rem;
+  gap: $spacing-4;
 }
 
 .row {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.75rem;
+  gap: $spacing-4;
   justify-content: flex-start;
   align-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
+  padding: $padding-lg;
+  background: $bg-primary;
+  transition: border-color $transition-base;
+
+  &:hover {
+    border-color: $border-default;
+  }
 }
 
 .row mat-form-field {
@@ -32,38 +62,41 @@
 }
 
 .field-label {
-  flex: 1 1 220px;
-  max-width: 280px;
+  flex: 1 1 240px;
+  max-width: 300px;
 }
 
 .field-age {
-  flex: 0 0 120px;
+  flex: 0 0 130px;
 }
 
 .field-amount {
-  flex: 0 0 150px;
+  flex: 0 0 160px;
 }
 
 .field-source {
-  flex: 0 0 180px;
+  flex: 0 0 200px;
 }
 
 .field-amount-wide {
-  flex: 0 0 190px;
+  flex: 0 0 200px;
 }
 
 .field-source-wide {
-  flex: 1 1 260px;
-  max-width: 320px;
+  flex: 1 1 280px;
+  max-width: 340px;
 }
 
 .num-input {
-  font-size: 0.95rem;
+  font-size: $font-base;
+  font-weight: $font-weight-medium;
 }
 
 .helper {
-  margin: 0;
-  color: #4b5563;
+  margin: 0 0 $spacing-4 0;
+  font-size: $font-sm;
+  color: $text-tertiary;
+  line-height: $line-height-relaxed;
 }
 
 .row ::ng-deep .mat-mdc-form-field-subscript-wrapper,
@@ -79,26 +112,37 @@
 }
 
 .row ::ng-deep .mat-mdc-text-field-wrapper {
-  height: 40px;
+  height: 48px;
 }
 
 .row ::ng-deep .mat-mdc-form-field-infix {
-  min-height: 40px;
-  padding-top: 6px;
-  padding-bottom: 4px;
+  min-height: 48px;
+  padding-top: 10px;
+  padding-bottom: 8px;
 }
 
 .remove-btn {
-  font-size: 1.25rem;
+  width: 36px;
+  height: 36px;
+  font-size: $font-xl;
   line-height: 1;
   cursor: pointer;
-  background: none;
-  border: none;
-  color: #555;
-  width: 28px;
-  height: 28px;
+  background: $bg-primary;
+  border: 2px solid $border-light;
+  border-radius: $radius-md;
+  color: $text-tertiary;
   padding: 0;
-  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $error;
+    color: $error;
+    background: rgba($error, 0.05);
+  }
 }
 
 @media (max-width: 720px) {
@@ -112,6 +156,6 @@
   }
 
   .remove-btn {
-    justify-self: start;
+    margin-left: auto;
   }
 }

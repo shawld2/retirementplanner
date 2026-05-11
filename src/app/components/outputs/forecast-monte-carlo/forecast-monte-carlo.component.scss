@@ -1,58 +1,79 @@
+@use 'styles/variables' as *;
+
 .mc-summary {
   display: grid;
-  gap: 0.5rem;
+  gap: $spacing-4;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #efe8db, #dbeafe);
+  padding: $padding-lg;
+  margin-bottom: $spacing-5;
+  border-radius: $radius-lg;
+  background: $cream-50;
+  border: 2px solid $border-light;
 }
 
 .chart-wrap {
   height: min(56vh, 520px);
   width: 100%;
+  background: $bg-primary;
+  border: 2px solid $border-light;
+  border-radius: $radius-xl;
+  padding: $padding-md;
 }
 
 .mc-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 0.6rem;
+  gap: $spacing-4;
+  margin-bottom: $spacing-4;
+  padding: $padding-md;
+  background: $cream-50;
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
 }
 
 .help-chip {
   display: inline-grid;
   place-items: center;
-  width: 1.15rem;
-  height: 1.15rem;
-  border-radius: 50%;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: #0f172a;
-  background: #dbeafe;
-  border: 1px solid #93c5fd;
+  width: 22px;
+  height: 22px;
+  border-radius: $radius-full;
+  font-size: $font-xs;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  background: $cream-200;
+  border: 2px solid $border-light;
   cursor: help;
   user-select: none;
 }
 
 .hist-title {
-  margin: 0.75rem 0 0.45rem;
+  margin: $spacing-5 0 $spacing-3 0;
+  font-size: $font-lg;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
 }
 
 .threshold-note {
-  margin: 0.55rem 0 0.25rem;
-  font-size: 0.82rem;
-  color: #334155;
+  margin: $spacing-3 0 $spacing-2 0;
+  font-size: $font-sm;
+  color: $text-secondary;
 }
 
 .histogram-wrap {
   height: min(38vh, 320px);
   width: 100%;
+  background: $bg-primary;
+  border: 2px solid $border-light;
+  border-radius: $radius-xl;
+  padding: $padding-md;
 }
 
 .mc-note {
-  margin-top: 0.6rem;
-  color: #475569;
-  font-size: 0.85rem;
+  margin-top: $spacing-4;
+  color: $text-tertiary;
+  font-size: $font-sm;
+  line-height: $line-height-relaxed;
 }

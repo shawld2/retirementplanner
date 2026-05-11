@@ -4,7 +4,7 @@
     <div class="header-content">
       <div class="header-top">
         <div class="header-brand">
-          <div class="brand-icon">💰</div>
+          <div class="brand-icon">RP</div>
           <div class="brand-text">
             <h1>RetirementPlanner</h1>
             <p>Professional Financial Forecasting</p>
@@ -104,19 +104,19 @@
             <!-- Action Buttons -->
             <div class="results-actions">
               <button mat-flat-button color="primary" type="button" (click)="recalculate()">
-                🔄 Recalculate
+                Recalculate
               </button>
               <button mat-stroked-button type="button" (click)="exportToJson()">
-                📥 Export Inputs
+                Export Inputs
               </button>
               <button mat-stroked-button type="button" (click)="fileInput.click()">
-                📤 Import Inputs
+                Import Inputs
               </button>
             </div>
 
             <!-- Results Tabs -->
             <mat-tab-group>
-              <mat-tab label="📊 Forecast Chart">
+              <mat-tab label="Forecast Chart">
                 <app-forecast-chart
                   [forecast]="forecastRows()"
                   [selectedScenario]="settingsGroup.value.returnScenario"
@@ -129,14 +129,14 @@
                   (drawdownPriorityChanged)="onDrawdownPriorityChanged($event)"
                 />
               </mat-tab>
-              <mat-tab label="📋 Year-by-Year Table">
+              <mat-tab label="Year-by-Year Table">
                 <app-forecast-table
                   [forecast]="forecastRows()"
                   [meRetirementAge]="personalGroup.value.meRetirementAge"
                   [partnerRetirementAge]="includePartner ? personalGroup.value.partnerRetirementAge : undefined"
                 />
               </mat-tab>
-              <mat-tab label="🎲 Monte Carlo Analysis">
+              <mat-tab label="Monte Carlo Analysis">
                 @if (isMonteCarloCalculating()) {
                   <section class="monte-carlo-loading" role="status" aria-live="polite">
                     <div class="loading-spinner" aria-hidden="true"></div>
