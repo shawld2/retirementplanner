@@ -2,57 +2,81 @@
   <h2>Personal Details</h2>
 
   <div class="grid">
-    <mat-form-field appearance="outline">
-      <mat-label>My current age</mat-label>
-      <input matInput type="number" formControlName="meCurrentAge" min="18" max="100" />
-    </mat-form-field>
+    <app-custom-input
+      label="My current age"
+      type="number"
+      formControlName="meCurrentAge"
+      [min]="18"
+      [max]="100"
+    ></app-custom-input>
 
-    <mat-form-field appearance="outline">
-      <mat-label>My retirement age</mat-label>
-      <input matInput type="number" formControlName="meRetirementAge" min="40" max="100" />
-    </mat-form-field>
+    <app-custom-input
+      label="My retirement age"
+      type="number"
+      formControlName="meRetirementAge"
+      [min]="40"
+      [max]="100"
+    ></app-custom-input>
   </div>
 
   <mat-slide-toggle formControlName="includePartner">Include partner?</mat-slide-toggle>
 
   @if (form().value.includePartner) {
     <div class="grid partner-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Partner current age</mat-label>
-        <input matInput type="number" formControlName="partnerCurrentAge" min="18" max="100" />
-      </mat-form-field>
+      <app-custom-input
+        label="Partner current age"
+        type="number"
+        formControlName="partnerCurrentAge"
+        [min]="18"
+        [max]="100"
+      ></app-custom-input>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Partner retirement age</mat-label>
-        <input matInput type="number" formControlName="partnerRetirementAge" min="40" max="100" />
-      </mat-form-field>
+      <app-custom-input
+        label="Partner retirement age"
+        type="number"
+        formControlName="partnerRetirementAge"
+        [min]="40"
+        [max]="100"
+      ></app-custom-input>
     </div>
   }
 
   <h3>State Pension</h3>
   <div class="grid">
-    <mat-form-field appearance="outline">
-      <mat-label>My state pension age</mat-label>
-      <input matInput type="number" formControlName="statePersonAge" min="55" max="100" />
-    </mat-form-field>
+    <app-custom-input
+      label="My state pension age"
+      type="number"
+      formControlName="statePersonAge"
+      [min]="55"
+      [max]="100"
+    ></app-custom-input>
 
-    <mat-form-field appearance="outline">
-      <mat-label>My annual state pension (today)</mat-label>
-      <input matInput type="number" formControlName="statePersonAmount" min="0" />
-    </mat-form-field>
+    <app-custom-input
+      label="My annual state pension (today)"
+      type="number"
+      formControlName="statePersonAmount"
+      prefix="£"
+      [min]="0"
+    ></app-custom-input>
   </div>
 
   @if (form().value.includePartner) {
     <div class="grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Partner state pension age</mat-label>
-        <input matInput type="number" formControlName="statePartnerAge" min="55" max="100" />
-      </mat-form-field>
+      <app-custom-input
+        label="Partner state pension age"
+        type="number"
+        formControlName="statePartnerAge"
+        [min]="55"
+        [max]="100"
+      ></app-custom-input>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Partner annual state pension (today)</mat-label>
-        <input matInput type="number" formControlName="statePartnerAmount" min="0" />
-      </mat-form-field>
+      <app-custom-input
+        label="Partner annual state pension (today)"
+        type="number"
+        formControlName="statePartnerAmount"
+        prefix="£"
+        [min]="0"
+      ></app-custom-input>
     </div>
   }
 </section>

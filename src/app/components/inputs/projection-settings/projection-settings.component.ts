@@ -2,11 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CustomInputComponent } from '../../shared/custom-input/custom-input.component';
 
 @Component({
   selector: 'app-projection-settings',
@@ -15,11 +14,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonToggleModule,
     MatSliderModule,
     MatCheckboxModule,
+    CustomInputComponent,
   ],
   templateUrl: './projection-settings.component.html',
   styleUrl: './projection-settings.component.scss',

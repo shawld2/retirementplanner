@@ -8,10 +8,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { CustomInputComponent } from '../../shared/custom-input/custom-input.component';
+import { CustomSelectComponent, SelectOption } from '../../shared/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-portfolio-inputs',
@@ -20,10 +19,9 @@ import { MatSelectModule } from '@angular/material/select';
     CommonModule,
     ReactiveFormsModule,
     MatExpansionModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
-    MatSelectModule,
+    CustomInputComponent,
+    CustomSelectComponent,
   ],
   templateUrl: './portfolio-inputs.component.html',
   styleUrl: './portfolio-inputs.component.scss',
@@ -33,6 +31,22 @@ export class PortfolioInputsComponent {
 
   readonly form = input.required<FormGroup>();
   readonly includePartner = input.required<boolean>();
+
+  readonly isaTypeOptions: SelectOption[] = [
+    { value: 'ISA', label: 'Stocks ISA' },
+    { value: 'LISA', label: 'LISA' },
+    { value: 'CASH_ISA', label: 'Cash ISA' },
+  ];
+
+  readonly propertyTypeOptions: SelectOption[] = [
+    { value: 'residential', label: 'Residential' },
+    { value: 'buy-to-let', label: 'Buy to let' },
+  ];
+
+  readonly mortgageTypeOptions: SelectOption[] = [
+    { value: 'repayment', label: 'Repayment' },
+    { value: 'interest-only', label: 'Interest only' },
+  ];
 
   get mePensions(): FormArray<FormGroup> {
     return this.form().get('mePensions') as FormArray<FormGroup>;
