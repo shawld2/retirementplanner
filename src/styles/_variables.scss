@@ -292,7 +292,7 @@ $input-height-sm: 44px;
 @mixin input-base {
   width: 100%;
   height: $input-height;
-  padding: 14px 16px;
+  padding: 16px 18px;
   font-family: $font-family-base;
   font-size: $font-base;
   font-weight: $font-weight-medium;
@@ -300,7 +300,7 @@ $input-height-sm: 44px;
   color: $text-primary;
   background: $bg-primary;
   border: $input-border-width solid $border-input;
-  border-radius: $radius-md;
+  border-radius: $radius-xl;
   transition: border-color $transition-base, box-shadow $transition-base;
 
   &::placeholder {
