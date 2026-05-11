@@ -18,7 +18,7 @@ interface LiquidPotState {
   owner: 'me' | 'partner';
   kind: 'dc' | 'isa';
   sourceType: 'pension' | 'isa';
-  isaType?: 'ISA' | 'LISA';
+  isaType?: 'ISA' | 'LISA' | 'CASH_ISA';
   pensionType?: 'DC' | 'DB';
   balance: number;
   uncrystallisedBalance?: number;
@@ -47,6 +47,7 @@ interface OwnerAmounts {
 interface SourceAmounts {
   pension: number;
   isa: number;
+  cashIsa: number;
   lisa: number;
 }
 
@@ -186,6 +187,9 @@ export class ForecastService {
     const startAge = inputs.me.currentAge;
     const endAge = 100;
     const inflationRate = inputs.settings.inflationPercent / 100;
+    const dbPensionIncreaseRate = (inputs.settings.dbPensionIncreasePercent ?? 0) / 100;
+    const statePensionIncreaseRate =
+      (inputs.settings.statePensionIncreasePercent ?? inputs.settings.inflationPercent) / 100;
     const rentalGrowthRate = (inputs.settings.rentalGrowthPercent ?? inputs.settings.inflationPercent) / 100;
 
     const pots = this.buildInitialPots(inputs);
@@ -231,13 +235,19 @@ export class ForecastService {
         notes,
       );
 
-      const dbIncomeByOwner = this.calculateDbIncomeByOwner(inputs, meAge, partnerAge);
+      const dbIncomeByOwner = this.calculateDbIncomeByOwner(
+        inputs,
+        meAge,
+        partnerAge,
+        dbPensionIncreaseRate,
+      );
       const dbIncome = dbIncomeByOwner.me + dbIncomeByOwner.partner;
+      const statePensionIncreaseFactor = Math.pow(1 + statePensionIncreaseRate, yearIndex);
       const stateIncomeByOwner = this.calculateStateIncomeByOwner(
         inputs,
         meAge,
         partnerAge,
-        inflationFactor,
+        statePensionIncreaseFactor,
       );
       const stateIncome = stateIncomeByOwner.me + stateIncomeByOwner.partner;
       const rentalIncome = this.calculateRentalIncome(properties, rentalGrowthFactor);
@@ -329,6 +339,7 @@ export class ForecastService {
           bySourceType: {
             pension: meResult.bySourceType.pension + partnerResult.bySourceType.pension,
             isa: meResult.bySourceType.isa + partnerResult.bySourceType.isa,
+            cashIsa: meResult.bySourceType.cashIsa + partnerResult.bySourceType.cashIsa,
             lisa: meResult.bySourceType.lisa + partnerResult.bySourceType.lisa,
           },
         };
@@ -365,6 +376,7 @@ export class ForecastService {
             bySourceType: {
               pension: drawdownResult.bySourceType.pension + topUp.bySourceType.pension,
               isa: drawdownResult.bySourceType.isa + topUp.bySourceType.isa,
+              cashIsa: drawdownResult.bySourceType.cashIsa + topUp.bySourceType.cashIsa,
               lisa: drawdownResult.bySourceType.lisa + topUp.bySourceType.lisa,
             },
           };
@@ -488,12 +500,14 @@ export class ForecastService {
         drawdownTaken: drawdownResult.total,
         drawdownFromPension: drawdownResult.bySourceType.pension,
         drawdownFromIsa: drawdownResult.bySourceType.isa,
+        drawdownFromCashIsa: drawdownResult.bySourceType.cashIsa,
         drawdownFromLisa: drawdownResult.bySourceType.lisa,
         drawdownTaxable: drawdownResult.taxable,
         futureContributionsAdded,
         lumpSumsTaken: lumpSumResult.total,
         lumpSumsFromPension: lumpSumResult.bySourceType.pension,
         lumpSumsFromIsa: lumpSumResult.bySourceType.isa,
+        lumpSumsFromCashIsa: lumpSumResult.bySourceType.cashIsa,
         lumpSumsFromLisa: lumpSumResult.bySourceType.lisa,
         lumpSumsTaxable: lumpSumResult.taxable,
         pclsConsumedThisYear,
@@ -788,7 +802,7 @@ export class ForecastService {
         owner: 'me',
         kind: 'isa',
         sourceType: 'isa',
-        isaType: isa.isaType === 'LISA' ? 'LISA' : 'ISA',
+        isaType: isa.isaType === 'LISA' ? 'LISA' : (isa.isaType === 'CASH_ISA' ? 'CASH_ISA' : 'ISA'),
         balance: isa.currentValue,
         chargesPercent: isa.chargesPercent,
         annualContribution: isa.annualContribution,
@@ -825,7 +839,7 @@ export class ForecastService {
           owner: 'partner',
           kind: 'isa',
           sourceType: 'isa',
-          isaType: isa.isaType === 'LISA' ? 'LISA' : 'ISA',
+          isaType: isa.isaType === 'LISA' ? 'LISA' : (isa.isaType === 'CASH_ISA' ? 'CASH_ISA' : 'ISA'),
           balance: isa.currentValue,
           chargesPercent: isa.chargesPercent,
           annualContribution: isa.annualContribution,
@@ -937,6 +951,7 @@ export class ForecastService {
       owner: 'partner',
       kind: 'isa',
       sourceType: 'isa',
+      isaType: 'CASH_ISA',
       balance: 0,
       chargesPercent: 0,
       annualContribution: 0,
@@ -951,13 +966,16 @@ export class ForecastService {
     inputs: ForecastInputs,
     meAge: number,
     partnerAge: number | undefined,
+    annualIncreaseRate: number,
   ): OwnerAmounts {
     const dbIncome: OwnerAmounts = this.emptyOwnerAmounts();
 
     for (const p of inputs.me.pensions.filter((pot) => pot.type === 'DB')) {
       const startAge = this.getDbPensionStartAge(p, inputs.me.retirementAge);
       if (meAge >= startAge) {
-        dbIncome.me += p.dbAnnualPension ?? 0;
+        const yearsInPayment = meAge - startAge;
+        const upliftFactor = Math.pow(1 + annualIncreaseRate, yearsInPayment);
+        dbIncome.me += (p.dbAnnualPension ?? 0) * upliftFactor;
       }
     }
 
@@ -965,7 +983,9 @@ export class ForecastService {
       for (const p of inputs.partner.pensions.filter((pot) => pot.type === 'DB')) {
         const startAge = this.getDbPensionStartAge(p, inputs.partner.retirementAge);
         if (partnerAge >= startAge) {
-          dbIncome.partner += p.dbAnnualPension ?? 0;
+          const yearsInPayment = partnerAge - startAge;
+          const upliftFactor = Math.pow(1 + annualIncreaseRate, yearsInPayment);
+          dbIncome.partner += (p.dbAnnualPension ?? 0) * upliftFactor;
         }
       }
     }
@@ -977,12 +997,12 @@ export class ForecastService {
     inputs: ForecastInputs,
     meAge: number,
     partnerAge: number | undefined,
-    inflationFactor: number,
+    statePensionIncreaseFactor: number,
   ): OwnerAmounts {
     const income = this.emptyOwnerAmounts();
 
     if (meAge >= inputs.statePersonAge) {
-      income.me += inputs.statePersonAmount * inflationFactor;
+      income.me += inputs.statePersonAmount * statePensionIncreaseFactor;
     }
 
     if (
@@ -992,7 +1012,7 @@ export class ForecastService {
       inputs.statePartnerAmount !== undefined &&
       partnerAge >= inputs.statePartnerAge
     ) {
-      income.partner += inputs.statePartnerAmount * inflationFactor;
+      income.partner += inputs.statePartnerAmount * statePensionIncreaseFactor;
     }
 
     return income;
@@ -1093,6 +1113,7 @@ export class ForecastService {
       taxableByOwner.partner += amountTaken.taxableByOwner.partner;
       bySourceType.pension += amountTaken.bySourceType.pension;
       bySourceType.isa += amountTaken.bySourceType.isa;
+      bySourceType.cashIsa += amountTaken.bySourceType.cashIsa;
       bySourceType.lisa += amountTaken.bySourceType.lisa;
       notes.push(
         `Lump sum event ${event.label}: ${Math.round(amountTaken.total).toLocaleString()}`,
@@ -1193,6 +1214,8 @@ export class ForecastService {
         taxableByOwner[source.owner] += applied.taxable;
         if (source.sourceType === 'isa' && source.isaType === 'LISA') {
           bySourceType.lisa += applied.received;
+        } else if (source.sourceType === 'isa' && source.isaType === 'CASH_ISA') {
+          bySourceType.cashIsa += applied.received;
         } else {
           bySourceType[source.sourceType] += applied.received;
         }
@@ -1227,6 +1250,7 @@ export class ForecastService {
         taxableByOwner.partner += result.taxableByOwner.partner;
         bySourceType.pension += result.bySourceType.pension;
         bySourceType.isa += result.bySourceType.isa;
+        bySourceType.cashIsa += result.bySourceType.cashIsa;
         bySourceType.lisa += result.bySourceType.lisa;
       }
     }
@@ -1262,6 +1286,8 @@ export class ForecastService {
           taxableByOwner[pot.owner] += applied.taxable;
           if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
             bySourceType.lisa += applied.received;
+          } else if (pot.sourceType === 'isa' && pot.isaType === 'CASH_ISA') {
+            bySourceType.cashIsa += applied.received;
           } else {
             bySourceType[pot.sourceType] += applied.received;
           }
@@ -1366,6 +1392,8 @@ export class ForecastService {
       taxableByOwner[pot.owner] += applied.taxable;
       if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
         bySourceType.lisa += applied.received;
+      } else if (pot.sourceType === 'isa' && pot.isaType === 'CASH_ISA') {
+        bySourceType.cashIsa += applied.received;
       } else {
         bySourceType[pot.sourceType] += applied.received;
       }
@@ -1397,6 +1425,8 @@ export class ForecastService {
         taxableByOwner[pot.owner] += applied.taxable;
         if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
           bySourceType.lisa += applied.received;
+        } else if (pot.sourceType === 'isa' && pot.isaType === 'CASH_ISA') {
+          bySourceType.cashIsa += applied.received;
         } else {
           bySourceType[pot.sourceType] += applied.received;
         }
@@ -1418,7 +1448,7 @@ export class ForecastService {
   }
 
   private emptySourceAmounts(): SourceAmounts {
-    return { pension: 0, isa: 0, lisa: 0 };
+    return { pension: 0, isa: 0, cashIsa: 0, lisa: 0 };
   }
 
   private applyGrowth(
@@ -1427,7 +1457,7 @@ export class ForecastService {
     grossRateOverride?: number,
   ): number {
     let growthTotal = 0;
-    const grossRate = grossRateOverride ?? settings.returnRates[settings.returnScenario] / 100;
+    const defaultGrossRate = grossRateOverride ?? settings.returnRates[settings.returnScenario] / 100;
 
     for (const pot of pots) {
       if (pot.balance <= 0) {
@@ -1435,6 +1465,9 @@ export class ForecastService {
         continue;
       }
 
+      const grossRate = pot.kind === 'isa' && pot.isaType === 'CASH_ISA'
+        ? settings.cashIsaPercent / 100
+        : defaultGrossRate;
       const chargeRate = (pot.chargesPercent ?? settings.globalChargesPercent) / 100;
       const netRate = grossRate - chargeRate;
       const growth = pot.balance * netRate;

@@ -33,7 +33,7 @@ export interface PensionPot {
 export interface IsaPot {
   id: string;
   label: string;
-  isaType: 'ISA' | 'LISA';
+  isaType: 'ISA' | 'LISA' | 'CASH_ISA';
   currentValue: number;
   annualContribution: number;
   chargesPercent?: number;
@@ -53,6 +53,9 @@ export interface PropertyAsset {
 
 export interface ProjectionSettings {
   inflationPercent: number;
+  dbPensionIncreasePercent: number;
+  statePensionIncreasePercent: number;
+  cashIsaPercent: number;
   rentalGrowthPercent: number;
   housePriceGrowthPercent: number;
   rentalOwnershipMePercent: number;
@@ -177,12 +180,14 @@ export interface ForecastYear {
   drawdownTaken: number;
   drawdownFromPension: number;
   drawdownFromIsa: number;
+  drawdownFromCashIsa: number;
   drawdownFromLisa: number;
   drawdownTaxable: number;
   futureContributionsAdded: number;
   lumpSumsTaken: number;
   lumpSumsFromPension: number;
   lumpSumsFromIsa: number;
+  lumpSumsFromCashIsa: number;
   lumpSumsFromLisa: number;
   lumpSumsTaxable: number;
   pclsConsumedThisYear: number;

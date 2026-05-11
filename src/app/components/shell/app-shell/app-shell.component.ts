@@ -74,13 +74,16 @@ export class AppShellComponent implements OnDestroy {
     }),
     portfolio: this.fb.group({
       mePensions: this.fb.array([this.createPension('Me Workplace DC', 'DC')]),
-      meIsas: this.fb.array([this.createIsa('Me ISA', 'ISA')]),
+      meIsas: this.fb.array([this.createIsa('Me Stocks ISA', 'ISA')]),
       partnerPensions: this.fb.array([this.createPension('Partner Pension', 'DB')]),
-      partnerIsas: this.fb.array([this.createIsa('Partner ISA', 'ISA')]),
+      partnerIsas: this.fb.array([this.createIsa('Partner Stocks ISA', 'ISA')]),
       properties: this.fb.array([]),
     }),
     settings: this.fb.group({
       inflationPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
+      dbPensionIncreasePercent: this.fb.control(0, [Validators.required, Validators.min(0), Validators.max(100)]),
+      statePensionIncreasePercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
+      cashIsaPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
       rentalGrowthPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
       housePriceGrowthPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
       rentalOwnershipMePercent: this.fb.control(100, [Validators.required, Validators.min(0), Validators.max(100)]),
@@ -182,7 +185,9 @@ export class AppShellComponent implements OnDestroy {
       .filter((p) => !!p['id'])
       .filter((p) => p['type'] !== 'DB')
       .map((p) => {
-        const accountType = p['isaType'] === 'LISA' ? 'LISA' : (p['isaType'] === 'ISA' ? 'ISA' : 'Pension');
+        const accountType = p['isaType'] === 'LISA'
+          ? 'LISA'
+          : (p['isaType'] === 'CASH_ISA' ? 'Cash ISA' : (p['isaType'] === 'ISA' ? 'Stocks ISA' : 'Pension'));
         const baseLabel = (p['label'] as string) || (p['id'] as string);
         return {
           id: p['id'] as string,
@@ -288,11 +293,11 @@ export class AppShellComponent implements OnDestroy {
     });
   }
 
-  private createIsa(label: string, isaType: 'ISA' | 'LISA'): FormGroup {
+  private createIsa(label: string, isaType: 'ISA' | 'LISA' | 'CASH_ISA'): FormGroup {
     return this.fb.group({
       id: this.fb.control(crypto.randomUUID(), { nonNullable: true }),
       label: this.fb.control(label, [Validators.required]),
-      isaType: this.fb.control<'ISA' | 'LISA'>(isaType, [Validators.required]),
+      isaType: this.fb.control<'ISA' | 'LISA' | 'CASH_ISA'>(isaType, [Validators.required]),
       currentValue: this.fb.control(25000, [Validators.min(0)]),
       annualContribution: this.fb.control(4000, [Validators.min(0)]),
       chargesPercent: this.fb.control(0),
@@ -329,6 +334,8 @@ export class AppShellComponent implements OnDestroy {
       }))
       .sort((a, b) => a.age - b.age);
 
+    const inflationPercent = Number(settings.inflationPercent ?? 2.5);
+
     return {
       me: {
         currentAge: Number(personal.meCurrentAge),
@@ -357,7 +364,12 @@ export class AppShellComponent implements OnDestroy {
           p.propertyType === 'buy-to-let' ? Math.max(0, Number(p.annualRentalIncome ?? 0)) : 0,
       })),
       settings: {
-        inflationPercent: Number(settings.inflationPercent),
+        inflationPercent,
+        dbPensionIncreasePercent: Number(settings.dbPensionIncreasePercent ?? 0),
+        statePensionIncreasePercent: Number(
+          settings.statePensionIncreasePercent ?? settings.inflationPercent ?? 2.5,
+        ),
+        cashIsaPercent: Math.min(100, Math.max(0, Number(settings.cashIsaPercent ?? 2.5))),
         rentalGrowthPercent: Number(settings.rentalGrowthPercent ?? settings.inflationPercent ?? 2.5),
         housePriceGrowthPercent: Number(settings.housePriceGrowthPercent ?? settings.inflationPercent ?? 2.5),
         rentalOwnershipMePercent: Math.min(100, Math.max(0, Number(settings.rentalOwnershipMePercent ?? 100))),
@@ -435,8 +447,8 @@ export class AppShellComponent implements OnDestroy {
       raw?.portfolio?.meIsas ?? [],
       (v) => this.fb.group({
         id: this.fb.control(v.id ?? crypto.randomUUID(), { nonNullable: true }),
-        label: this.fb.control(v.label ?? 'Me ISA'),
-        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : 'ISA'),
+        label: this.fb.control(v.label ?? 'Me Stocks ISA'),
+        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : (v.isaType === 'CASH_ISA' ? 'CASH_ISA' : 'ISA')),
         currentValue: this.fb.control(v.currentValue ?? 0),
         annualContribution: this.fb.control(v.annualContribution ?? 0),
         chargesPercent: this.fb.control(v.chargesPercent ?? 0),
@@ -466,8 +478,8 @@ export class AppShellComponent implements OnDestroy {
       raw?.portfolio?.partnerIsas ?? [],
       (v) => this.fb.group({
         id: this.fb.control(v.id ?? crypto.randomUUID(), { nonNullable: true }),
-        label: this.fb.control(v.label ?? 'Partner ISA'),
-        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : 'ISA'),
+        label: this.fb.control(v.label ?? 'Partner Stocks ISA'),
+        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : (v.isaType === 'CASH_ISA' ? 'CASH_ISA' : 'ISA')),
         currentValue: this.fb.control(v.currentValue ?? 0),
         annualContribution: this.fb.control(v.annualContribution ?? 0),
         chargesPercent: this.fb.control(v.chargesPercent ?? 0),

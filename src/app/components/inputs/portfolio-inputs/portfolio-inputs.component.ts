@@ -117,11 +117,11 @@ export class PortfolioInputsComponent {
     });
   }
 
-  createIsa(label: string, isaType: 'ISA' | 'LISA'): FormGroup {
+  createIsa(label: string, isaType: 'ISA' | 'LISA' | 'CASH_ISA'): FormGroup {
     return this.fb.group({
       id: this.fb.control(crypto.randomUUID(), { nonNullable: true }),
       label: this.fb.control(label, [Validators.required]),
-      isaType: this.fb.control<'ISA' | 'LISA'>(isaType, [Validators.required]),
+      isaType: this.fb.control<'ISA' | 'LISA' | 'CASH_ISA'>(isaType, [Validators.required]),
       currentValue: this.fb.control(0, [Validators.min(0)]),
       annualContribution: this.fb.control(0, [Validators.min(0)]),
       chargesPercent: this.fb.control(0),

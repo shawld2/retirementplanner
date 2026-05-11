@@ -8,6 +8,12 @@
   margin-bottom: 0.75rem;
 }
 
+.table-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
 .table-wrap {
   display: block;
   overflow-x: auto;
@@ -114,9 +120,11 @@
 .forecast-table .mat-column-dbIncome,
 .forecast-table .mat-column-stateIncome,
 .forecast-table .mat-column-drawdownTaken,
+.forecast-table .mat-column-drawdownFromCashIsa,
 .forecast-table .mat-column-lumpSumsTaken,
 .forecast-table .mat-column-lumpSumsFromPension,
 .forecast-table .mat-column-lumpSumsFromIsa,
+.forecast-table .mat-column-lumpSumsFromCashIsa,
 .forecast-table .mat-column-pclsConsumedThisYear,
 .forecast-table .mat-column-meIncomeTax,
 .forecast-table .mat-column-partnerIncomeTax,

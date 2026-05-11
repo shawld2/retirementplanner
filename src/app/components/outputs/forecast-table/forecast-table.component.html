@@ -5,6 +5,10 @@
   <div>Total Income Tax: {{ summary().totalTax | currency: 'GBP':'symbol':'1.0-0' }}</div>
 </section>
 
+<div class="table-actions">
+  <button mat-stroked-button type="button" (click)="downloadYearlyTableCsv()">Download Year-by-Year CSV</button>
+</div>
+
 <div class="table-wrap">
   <div class="table-inner yearly-table">
     <table mat-table [dataSource]="forecast()" class="forecast-table">
@@ -79,8 +83,13 @@
     </ng-container>
 
     <ng-container matColumnDef="drawdownFromIsa">
-      <th mat-header-cell *matHeaderCellDef>Drawdown From ISAs</th>
+      <th mat-header-cell *matHeaderCellDef>Drawdown From Stocks ISA</th>
       <td mat-cell *matCellDef="let row">{{ row.drawdownFromIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="drawdownFromCashIsa">
+      <th mat-header-cell *matHeaderCellDef>Drawdown From Cash ISA</th>
+      <td mat-cell *matCellDef="let row">{{ row.drawdownFromCashIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="drawdownFromLisa">
@@ -104,8 +113,13 @@
     </ng-container>
 
     <ng-container matColumnDef="lumpSumsFromIsa">
-      <th mat-header-cell *matHeaderCellDef>Lump Sums From ISAs</th>
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From Stocks ISA</th>
       <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSumsFromCashIsa">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From Cash ISA</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromCashIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="lumpSumsFromLisa">

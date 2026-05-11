@@ -18,6 +18,51 @@
     </div>
 
     <div>
+      <label class="label">DB scheme annual increase %</label>
+      <mat-slider min="0" max="10" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('dbPensionIncreasePercent', 0)"
+          (valueChange)="onSliderChange('dbPensionIncreasePercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>DB scheme annual increase %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="dbPensionIncreasePercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
+      <label class="label">State pension annual increase %</label>
+      <mat-slider min="0" max="10" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('statePensionIncreasePercent', 2.5)"
+          (valueChange)="onSliderChange('statePensionIncreasePercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>State pension annual increase %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="statePensionIncreasePercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
+      <label class="label">Cash ISA annual return %</label>
+      <mat-slider min="0" max="10" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('cashIsaPercent', 2.5)"
+          (valueChange)="onSliderChange('cashIsaPercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>Cash ISA annual return %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="cashIsaPercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
       <label class="label">Rental income annual growth %</label>
       <mat-slider min="0" max="10" step="0.1" discrete>
         <input
@@ -61,18 +106,42 @@
         <input matInput type="number" min="0" max="100" formControlName="globalChargesPercent" />
       </mat-form-field>
     </div>
+
+    <div class="scenario-card">
+      <label class="label">Investment return %</label>
+      <mat-slider min="0" max="2" step="1" discrete>
+        <input
+          matSliderThumb
+          [value]="returnScenarioSliderValue()"
+          (valueChange)="onReturnScenarioSliderChange($event)"
+        />
+      </mat-slider>
+      <div class="scenario-points" aria-hidden="true">
+        <span>Low</span>
+        <span>Medium</span>
+        <span>High</span>
+      </div>
+
+      <div class="rates rates-one-row" formGroupName="returnRates">
+        <mat-form-field appearance="outline">
+          <mat-label>low%</mat-label>
+          <input matInput type="number" min="0" max="100" formControlName="low" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>medium%</mat-label>
+          <input matInput type="number" min="0" max="100" formControlName="medium" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>high%</mat-label>
+          <input matInput type="number" min="0" max="100" formControlName="high" />
+        </mat-form-field>
+      </div>
+    </div>
   </div>
 
   <div class="toggles-row">
-    <div class="toggle-card">
-      <label class="label">Return Scenario</label>
-      <mat-button-toggle-group formControlName="returnScenario">
-        <mat-button-toggle value="low">Low</mat-button-toggle>
-        <mat-button-toggle value="medium">Medium</mat-button-toggle>
-        <mat-button-toggle value="high">High</mat-button-toggle>
-      </mat-button-toggle-group>
-    </div>
-
     <div class="toggle-card">
       <label class="label">Drawdown Priority</label>
       <mat-button-toggle-group formControlName="drawdownPriority">
@@ -133,23 +202,6 @@
       <p class="split-hint">If properties are jointly owned with partner, set this to your ownership percentage.</p>
     </div>
   }
-
-  <div class="rates" formGroupName="returnRates">
-    <mat-form-field appearance="outline">
-      <mat-label>Low return %</mat-label>
-      <input matInput type="number" min="0" max="100" formControlName="low" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Medium return %</mat-label>
-      <input matInput type="number" min="0" max="100" formControlName="medium" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>High return %</mat-label>
-      <input matInput type="number" min="0" max="100" formControlName="high" />
-    </mat-form-field>
-  </div>
 
   <div class="mc-section">
     <h3>Monte Carlo</h3>

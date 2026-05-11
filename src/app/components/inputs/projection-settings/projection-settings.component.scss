@@ -15,6 +15,50 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.rates-one-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.rates-one-row .mat-mdc-form-field {
+  min-width: 0;
+}
+
+.scenario-card {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  grid-column: span 2;
+}
+
+.scenario-card mat-slider {
+  width: 100%;
+}
+
+.scenario-card .mat-mdc-form-field {
+  width: 100%;
+}
+
+.scenario-points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: -0.15rem;
+  margin-bottom: 0.1rem;
+}
+
+.scenario-points span:nth-child(1) {
+  text-align: left;
+}
+
+.scenario-points span:nth-child(2) {
+  text-align: center;
+}
+
+.scenario-points span:nth-child(3) {
+  text-align: right;
+}
+
 .label {
   display: block;
   font-weight: 600;
@@ -23,7 +67,7 @@
 
 .toggles-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  grid-template-columns: minmax(260px, 1fr);
   gap: 0.75rem;
   align-items: start;
 }
@@ -202,5 +246,13 @@
   .split-row mat-slider,
   .split-hint {
     grid-column: 1 / 2;
+  }
+
+  .rates-one-row {
+    grid-template-columns: 1fr;
+  }
+
+  .scenario-card {
+    grid-column: span 1;
   }
 }

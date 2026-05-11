@@ -47,4 +47,30 @@ export class ProjectionSettingsComponent {
     control.markAsDirty();
     control.markAsTouched();
   }
+
+  returnScenarioSliderValue(): number {
+    const scenario = this.form().get('returnScenario')?.value;
+    if (scenario === 'low') {
+      return 0;
+    }
+
+    if (scenario === 'high') {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  onReturnScenarioSliderChange(value: number): void {
+    const control = this.form().get('returnScenario');
+    if (!control) {
+      return;
+    }
+
+    const rounded = Math.round(Number(value));
+    const scenario = rounded <= 0 ? 'low' : (rounded >= 2 ? 'high' : 'medium');
+    control.setValue(scenario);
+    control.markAsDirty();
+    control.markAsTouched();
+  }
 }

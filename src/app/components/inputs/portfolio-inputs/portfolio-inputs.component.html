@@ -10,7 +10,7 @@
       <div class="actions">
         <button mat-stroked-button type="button" (click)="addMeDb()">Add DB Pension</button>
         <button mat-stroked-button type="button" (click)="addMeDc()">Add DC Pension</button>
-        <button mat-stroked-button type="button" (click)="addMeIsa()">Add ISA / LISA</button>
+        <button mat-stroked-button type="button" (click)="addMeIsa()">Add ISA</button>
       </div>
 
       <h3>DC Pensions</h3>
@@ -68,8 +68,9 @@
               <mat-form-field appearance="outline">
                 <mat-label>Account type</mat-label>
                 <mat-select formControlName="isaType">
-                  <mat-option value="ISA">ISA</mat-option>
+                  <mat-option value="ISA">Stocks ISA</mat-option>
                   <mat-option value="LISA">LISA</mat-option>
+                  <mat-option value="CASH_ISA">Cash ISA</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
@@ -95,7 +96,7 @@
         <div class="actions">
           <button mat-stroked-button type="button" (click)="addPartnerDb()">Add DB Pension</button>
           <button mat-stroked-button type="button" (click)="addPartnerDc()">Add DC Pension</button>
-          <button mat-stroked-button type="button" (click)="addPartnerIsa()">Add ISA / LISA</button>
+          <button mat-stroked-button type="button" (click)="addPartnerIsa()">Add ISA</button>
         </div>
 
         <h3>DC Pensions</h3>
@@ -153,8 +154,9 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Account type</mat-label>
                   <mat-select formControlName="isaType">
-                    <mat-option value="ISA">ISA</mat-option>
+                    <mat-option value="ISA">Stocks ISA</mat-option>
                     <mat-option value="LISA">LISA</mat-option>
+                    <mat-option value="CASH_ISA">Cash ISA</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
