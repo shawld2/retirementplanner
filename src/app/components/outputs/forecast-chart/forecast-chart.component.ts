@@ -101,6 +101,33 @@ export class ForecastChartComponent {
       data: rows.map((r) => Number(r.taxableWithdrawals.toFixed(0))),
     };
 
+    const rentalIncomeSeries = {
+      name: 'Rental Income',
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      lineStyle: { width: 2, type: 'dashed', color: '#7c3aed' },
+      data: rows.map((r) => Number(r.rentalIncome.toFixed(0))),
+    };
+
+    const propertyValueSeries = {
+      name: 'Property Value',
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      lineStyle: { width: 2, color: '#be123c' },
+      data: rows.map((r) => Number(r.totalPropertyValue.toFixed(0))),
+    };
+
+    const mortgageRemainingSeries = {
+      name: 'Mortgage Remaining',
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      lineStyle: { width: 2, type: 'dotted', color: '#0369a1' },
+      data: rows.map((r) => Number(r.totalMortgageRemaining.toFixed(0))),
+    };
+
     const incomeTaxSeries = {
       name: 'Income Tax Paid',
       type: 'line',
@@ -135,6 +162,7 @@ export class ForecastChartComponent {
           lines.push(`Total Pots: <strong>${this.formatCurrency(totalPots)}</strong>`);
           lines.push(`DB Pension Income: ${this.formatCurrency(row.dbIncome)}`);
           lines.push(`State Pension Income: ${this.formatCurrency(row.stateIncome)}`);
+          lines.push(`Rental Income: ${this.formatCurrency(row.rentalIncome)}`);
           lines.push(`Future Contributions Added: ${this.formatCurrency(row.futureContributionsAdded)}`);
           lines.push(`Drawdown Taken: ${this.formatCurrency(row.drawdownTaken)}`);
           lines.push(`Lump Sums: ${this.formatCurrency(row.lumpSumsTaken)}`);
@@ -159,6 +187,11 @@ export class ForecastChartComponent {
               row.grossFromPots > 0 ? row.taxOnPotWithdrawals / row.grossFromPots : 0,
             )}`,
           );
+          lines.push(`Property Value: ${this.formatCurrency(row.totalPropertyValue)}`);
+          lines.push(`Mortgage Remaining: ${this.formatCurrency(row.totalMortgageRemaining)}`);
+          lines.push(`Property Equity: ${this.formatCurrency(row.totalPropertyEquity)}`);
+          lines.push(`House Price Increase: ${this.formatCurrency(row.propertyGrowth)}`);
+          lines.push(`Mortgage Principal Repaid: ${this.formatCurrency(row.mortgagePrincipalRepaid)}`);
           lines.push('');
 
           for (const point of points) {
@@ -191,6 +224,9 @@ export class ForecastChartComponent {
             drawdownTakenSeries,
             lumpSumsSeries,
             taxableSeries,
+            rentalIncomeSeries,
+            propertyValueSeries,
+            mortgageRemainingSeries,
             incomeTaxSeries,
           ]
         : [...areaSeries],

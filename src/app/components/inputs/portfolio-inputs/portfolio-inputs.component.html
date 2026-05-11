@@ -155,5 +155,51 @@
         </div>
       </mat-expansion-panel>
     }
+
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Properties</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="addProperty()">Add Property</button>
+      </div>
+
+      <div formArrayName="properties" class="card-list">
+        @for (property of properties.controls; track property; let i = $index) {
+          <div class="pot-card" [formGroupName]="i">
+            <div class="grid">
+              <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Property type</mat-label>
+                <mat-select formControlName="propertyType" (selectionChange)="onPropertyTypeChanged(property, $event.value)">
+                  <mat-option value="residential">Residential</mat-option>
+                  <mat-option value="buy-to-let">Buy to let</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Mortgage type</mat-label>
+                <mat-select formControlName="mortgageType">
+                  <mat-option value="repayment">Repayment</mat-option>
+                  <mat-option value="interest-only">Interest only</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Mortgage outstanding</mat-label><input matInput type="number" formControlName="mortgageOutstanding" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Mortgage rate %</mat-label><input matInput type="number" formControlName="mortgageRatePercent" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>Mortgage years remaining</mat-label><input matInput type="number" formControlName="mortgageYearsRemaining" /></mat-form-field>
+              @if (property.get('propertyType')?.value === 'buy-to-let') {
+                <mat-form-field appearance="outline"><mat-label>Annual rental income</mat-label><input matInput type="number" formControlName="annualRentalIncome" /></mat-form-field>
+              }
+              <div class="remove-cell">
+                <button mat-icon-button type="button" (click)="remove(properties, i)">
+                  <span class="remove-glyph" aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </mat-expansion-panel>
   </mat-accordion>
 </section>

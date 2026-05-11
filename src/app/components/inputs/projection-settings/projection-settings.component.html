@@ -18,6 +18,36 @@
     </div>
 
     <div>
+      <label class="label">Rental income annual growth %</label>
+      <mat-slider min="0" max="10" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('rentalGrowthPercent', 2.5)"
+          (valueChange)="onSliderChange('rentalGrowthPercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>Rental income annual growth %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="rentalGrowthPercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
+      <label class="label">House price annual growth %</label>
+      <mat-slider min="0" max="20" step="0.1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('housePriceGrowthPercent', 2.5)"
+          (valueChange)="onSliderChange('housePriceGrowthPercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline">
+        <mat-label>House price annual growth %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="housePriceGrowthPercent" />
+      </mat-form-field>
+    </div>
+
+    <div>
       <label class="label">Global annual charges %</label>
       <mat-slider min="0" max="5" step="0.05" discrete>
         <input
@@ -67,6 +97,40 @@
         <input matInput type="number" min="0" max="100" formControlName="drawdownSplitToMePercent" />
       </mat-form-field>
       <p class="split-hint">Partner receives the remainder ({{ 100 - (form().get('drawdownSplitToMePercent')?.value ?? 50) }}%).</p>
+    </div>
+
+    <div class="split-row">
+      <label class="label">Rental income ownership - my share (%)</label>
+      <mat-slider min="0" max="100" step="1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('rentalOwnershipMePercent', 100)"
+          (valueChange)="onSliderChange('rentalOwnershipMePercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline" class="split-input">
+        <mat-label>My share %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="rentalOwnershipMePercent" />
+      </mat-form-field>
+      <p class="split-hint">Used for tax allocation. Partner's share ({{ 100 - (form().get('rentalOwnershipMePercent')?.value ?? 100) }}%) is taxed separately.</p>
+    </div>
+  }
+
+  @if (!includePartner()) {
+    <div class="split-row">
+      <label class="label">Rental income ownership - my share (%)</label>
+      <mat-slider min="0" max="100" step="1" discrete>
+        <input
+          matSliderThumb
+          [value]="sliderValue('rentalOwnershipMePercent', 100)"
+          (valueChange)="onSliderChange('rentalOwnershipMePercent', $event)"
+        />
+      </mat-slider>
+      <mat-form-field appearance="outline" class="split-input">
+        <mat-label>My share %</mat-label>
+        <input matInput type="number" min="0" max="100" formControlName="rentalOwnershipMePercent" />
+      </mat-form-field>
+      <p class="split-hint">If properties are jointly owned with partner, set this to your ownership percentage.</p>
     </div>
   }
 
@@ -136,7 +200,7 @@
       <h3>Income Tax Bands</h3>
       <button mat-stroked-button type="button" (click)="addTaxBand.emit()">Add Band</button>
     </div>
-    <p class="tax-hint">Used to calculate tax on DB pension + state pension + taxable pot withdrawals. Bands are marginal — set the lower threshold and rate for each band.</p>
+    <p class="tax-hint">Used to calculate tax on DB pension + state pension + rental income + taxable pot withdrawals. Bands are marginal — set the lower threshold and rate for each band.</p>
     <div class="tax-bands-wrap" [formGroup]="form()">
       <div class="tax-bands">
       <div class="tax-band-row tax-band-header">

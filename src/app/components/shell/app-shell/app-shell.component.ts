@@ -19,6 +19,8 @@ import {
   ForecastInputs,
   FutureContributionEvent,
   LumpSumEvent,
+  PropertyAsset,
+  ProjectionSettings,
   ReturnScenario,
   TaxBand,
 } from '../../../models/pension.models';
@@ -75,9 +77,13 @@ export class AppShellComponent implements OnDestroy {
       meIsas: this.fb.array([this.createIsa('Me ISA')]),
       partnerPensions: this.fb.array([this.createPension('Partner Pension', 'DB')]),
       partnerIsas: this.fb.array([this.createIsa('Partner ISA')]),
+      properties: this.fb.array([]),
     }),
     settings: this.fb.group({
       inflationPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
+      rentalGrowthPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
+      housePriceGrowthPercent: this.fb.control(2.5, [Validators.required, Validators.min(0), Validators.max(100)]),
+      rentalOwnershipMePercent: this.fb.control(100, [Validators.required, Validators.min(0), Validators.max(100)]),
       globalChargesPercent: this.fb.control(0.75, [Validators.required, Validators.min(0), Validators.max(100)]),
       returnScenario: this.fb.control<ReturnScenario>('medium', [Validators.required]),
       drawdownPriority: this.fb.control<'pension-first' | 'isa-first'>('pension-first', [Validators.required]),
@@ -326,8 +332,23 @@ export class AppShellComponent implements OnDestroy {
             isas: (portfolio.partnerIsas ?? []) as never[],
           }
         : undefined,
+      properties: ((portfolio.properties ?? []) as PropertyAsset[]).map((p) => ({
+        id: String(p.id),
+        label: String(p.label ?? 'Property'),
+        propertyType: p.propertyType === 'buy-to-let' ? 'buy-to-let' : 'residential',
+        currentValue: Math.max(0, Number(p.currentValue ?? 0)),
+        mortgageType: p.mortgageType === 'interest-only' ? 'interest-only' : 'repayment',
+        mortgageOutstanding: Math.max(0, Number(p.mortgageOutstanding ?? 0)),
+        mortgageRatePercent: Math.min(100, Math.max(0, Number(p.mortgageRatePercent ?? 0))),
+        mortgageYearsRemaining: Math.min(60, Math.max(0, Math.floor(Number(p.mortgageYearsRemaining ?? 0)))),
+        annualRentalIncome:
+          p.propertyType === 'buy-to-let' ? Math.max(0, Number(p.annualRentalIncome ?? 0)) : 0,
+      })),
       settings: {
         inflationPercent: Number(settings.inflationPercent),
+        rentalGrowthPercent: Number(settings.rentalGrowthPercent ?? settings.inflationPercent ?? 2.5),
+        housePriceGrowthPercent: Number(settings.housePriceGrowthPercent ?? settings.inflationPercent ?? 2.5),
+        rentalOwnershipMePercent: Math.min(100, Math.max(0, Number(settings.rentalOwnershipMePercent ?? 100))),
         globalChargesPercent: Number(settings.globalChargesPercent),
         returnScenario: settings.returnScenario as ReturnScenario,
         returnRates: {
@@ -357,7 +378,7 @@ export class AppShellComponent implements OnDestroy {
           ? Math.max(1, Math.floor(Number(settings.monteCarloSeed ?? 12345)))
           : undefined,
         monteCarloUseWorker: !!settings.monteCarloUseWorker,
-      },
+      } as ProjectionSettings,
       lumpSums,
       futureContributions,
       drawdownSchedule: schedule,
@@ -437,6 +458,31 @@ export class AppShellComponent implements OnDestroy {
         annualContribution: this.fb.control(v.annualContribution ?? 0),
         chargesPercent: this.fb.control(v.chargesPercent ?? 0),
       }),
+    );
+
+    this.replaceArray(
+      this.portfolioGroup.get('properties') as FormArray,
+      raw?.portfolio?.properties ?? [],
+      (v) => {
+        const propertyType = v.propertyType === 'buy-to-let' ? 'buy-to-let' : 'residential';
+        return this.fb.group({
+          id: this.fb.control(v.id ?? crypto.randomUUID(), { nonNullable: true }),
+          label: this.fb.control(v.label ?? 'Property', [Validators.required]),
+          propertyType: this.fb.control(propertyType, [Validators.required]),
+          currentValue: this.fb.control(v.currentValue ?? 300000, [Validators.required, Validators.min(0)]),
+          mortgageType: this.fb.control(v.mortgageType === 'interest-only' ? 'interest-only' : 'repayment', [Validators.required]),
+          mortgageOutstanding: this.fb.control(v.mortgageOutstanding ?? 0, [Validators.required, Validators.min(0)]),
+          mortgageRatePercent: this.fb.control(v.mortgageRatePercent ?? 4, [Validators.required, Validators.min(0), Validators.max(100)]),
+          mortgageYearsRemaining: this.fb.control(v.mortgageYearsRemaining ?? 20, [Validators.required, Validators.min(0), Validators.max(60)]),
+          annualRentalIncome: this.fb.control(
+            {
+              value: propertyType === 'buy-to-let' ? v.annualRentalIncome ?? 0 : 0,
+              disabled: propertyType !== 'buy-to-let',
+            },
+            [Validators.required, Validators.min(0)],
+          ),
+        });
+      },
     );
 
     this.replaceArray(

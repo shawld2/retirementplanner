@@ -5,6 +5,7 @@ import {
   ForecastInputs,
   ForecastYear,
   LumpSumEvent,
+  PropertyAsset,
   MonteCarloResult,
   PensionPot,
   ProjectionSettings,
@@ -23,6 +24,18 @@ interface LiquidPotState {
   chargesPercent?: number;
   annualContribution: number;
   taxFreePercentage: number;
+}
+
+interface PropertyProjectionState {
+  id: string;
+  label: string;
+  propertyType: 'residential' | 'buy-to-let';
+  currentValue: number;
+  mortgageType: 'repayment' | 'interest-only';
+  mortgageOutstanding: number;
+  mortgageRatePercent: number;
+  mortgageYearsRemaining: number;
+  annualRentalIncome: number;
 }
 
 interface OwnerAmounts {
@@ -170,8 +183,10 @@ export class ForecastService {
     const startAge = inputs.me.currentAge;
     const endAge = 100;
     const inflationRate = inputs.settings.inflationPercent / 100;
+    const rentalGrowthRate = (inputs.settings.rentalGrowthPercent ?? inputs.settings.inflationPercent) / 100;
 
     const pots = this.buildInitialPots(inputs);
+    const properties = this.buildInitialProperties(inputs.properties ?? []);
     const rows: ForecastYear[] = [];
     const pclsWithdrawnByPot: Record<string, number> = {};
     const crystallisedByPot: Record<string, number> = {};
@@ -191,11 +206,13 @@ export class ForecastService {
         : undefined;
       const year = currentYear + yearIndex;
       const inflationFactor = Math.pow(1 + inflationRate, yearIndex);
+      const rentalGrowthFactor = Math.pow(1 + rentalGrowthRate, yearIndex);
       const notes: string[] = [];
 
       const openingBalances = this.snapshotBalances(pots);
       const potLabels = this.snapshotLabels(pots);
       const openingTotal = this.totalLiquidBalance(pots);
+      const openingPropertySnapshot = this.snapshotPropertyState(properties);
       const pclsUsedAtYearStart = pclsUsed;
 
       this.addContributions(pots, inputs, meAge, partnerAge);
@@ -220,6 +237,7 @@ export class ForecastService {
         inflationFactor,
       );
       const stateIncome = stateIncomeByOwner.me + stateIncomeByOwner.partner;
+      const rentalIncome = this.calculateRentalIncome(properties, rentalGrowthFactor);
 
       const drawdownPlan = this.getInterpolatedDrawdown(inputs.drawdownSchedule, meAge);
       const drawdownRequired = Math.max(0, drawdownPlan.annualAmount * inflationFactor);
@@ -234,7 +252,7 @@ export class ForecastService {
 
       const eligiblePots = this.getEligibleWithdrawalPots(pots, inputs, meAge, partnerAge);
 
-      const guaranteedIncome = dbIncome + stateIncome;
+      const guaranteedIncome = dbIncome + stateIncome + rentalIncome;
       let requiredFromPots = Math.max(0, drawdownRequired - guaranteedIncome);
 
       // If the user entered net amounts, gross up to find how much must be withdrawn before tax
@@ -377,7 +395,9 @@ export class ForecastService {
             )
           : undefined;
       const investmentGrowth = this.applyGrowth(pots, inputs.settings, randomisedGrossRate);
+      const propertyProjection = this.applyPropertyProjection(properties, inputs.settings);
       const closingTotal = this.totalLiquidBalance(pots);
+      const closingPropertySnapshot = this.snapshotPropertyState(properties);
       const pclsSnapshot = this.snapshotPclsState(
         pots,
         pclsWithdrawnByPot,
@@ -392,18 +412,25 @@ export class ForecastService {
         exhaustedEver = true;
       }
 
+      // Split rental income by ownership percentage
+      const rentalOwnershipMePercent = Math.min(100, Math.max(0, inputs.settings.rentalOwnershipMePercent ?? 100)) / 100;
+      const meRentalIncome = rentalIncome * rentalOwnershipMePercent;
+      const partnerRentalIncome = rentalIncome * (1 - rentalOwnershipMePercent);
+
       const meTaxableIncome =
         dbIncomeByOwner.me +
         stateIncomeByOwner.me +
+        meRentalIncome +
         drawdownResult.taxableByOwner.me +
         lumpSumResult.taxableByOwner.me;
       const partnerTaxableIncome =
         dbIncomeByOwner.partner +
         stateIncomeByOwner.partner +
+        partnerRentalIncome +
         drawdownResult.taxableByOwner.partner +
         lumpSumResult.taxableByOwner.partner;
-      const meGuaranteedTaxableIncome = dbIncomeByOwner.me + stateIncomeByOwner.me;
-      const partnerGuaranteedTaxableIncome = dbIncomeByOwner.partner + stateIncomeByOwner.partner;
+      const meGuaranteedTaxableIncome = dbIncomeByOwner.me + stateIncomeByOwner.me + meRentalIncome;
+      const partnerGuaranteedTaxableIncome = dbIncomeByOwner.partner + stateIncomeByOwner.partner + partnerRentalIncome;
       const meIncomeTax = inputs.settings.taxBands?.length
         ? this.calculateTax(meTaxableIncome, inputs.settings.taxBands)
         : 0;
@@ -431,6 +458,14 @@ export class ForecastService {
         remainingTaxFreeByPot: pclsSnapshot.remaining,
         crystallisedByPot: pclsSnapshot.crystallised,
         totalPotValue: openingTotal,
+        totalPropertyValue: openingPropertySnapshot.totalPropertyValue,
+        totalMortgageRemaining: openingPropertySnapshot.totalMortgageRemaining,
+        totalPropertyEquity: openingPropertySnapshot.totalPropertyEquity,
+        rentalIncome,
+        propertyGrowth: propertyProjection.propertyGrowth,
+        mortgagePrincipalRepaid: propertyProjection.mortgagePrincipalRepaid,
+        closingPropertyValue: closingPropertySnapshot.totalPropertyValue,
+        closingMortgageRemaining: closingPropertySnapshot.totalMortgageRemaining,
         dbIncome,
         stateIncome,
         drawdownRequired,
@@ -462,6 +497,103 @@ export class ForecastService {
     }
 
     return rows;
+  }
+
+  private buildInitialProperties(properties: PropertyAsset[]): PropertyProjectionState[] {
+    return (properties ?? []).map((p) => ({
+      id: p.id,
+      label: p.label,
+      propertyType: p.propertyType,
+      currentValue: Math.max(0, p.currentValue ?? 0),
+      mortgageType: p.mortgageType,
+      mortgageOutstanding: Math.max(0, p.mortgageOutstanding ?? 0),
+      mortgageRatePercent: Math.max(0, p.mortgageRatePercent ?? 0),
+      mortgageYearsRemaining: Math.max(0, Math.floor(p.mortgageYearsRemaining ?? 0)),
+      annualRentalIncome: Math.max(0, p.annualRentalIncome ?? 0),
+    }));
+  }
+
+  private calculateRentalIncome(
+    properties: PropertyProjectionState[],
+    rentalGrowthFactor: number,
+  ): number {
+    return properties.reduce((sum, property) => {
+      if (property.propertyType !== 'buy-to-let') {
+        return sum;
+      }
+
+      return sum + property.annualRentalIncome * rentalGrowthFactor;
+    }, 0);
+  }
+
+  private applyPropertyProjection(
+    properties: PropertyProjectionState[],
+    settings: ProjectionSettings,
+  ): { propertyGrowth: number; mortgagePrincipalRepaid: number } {
+    const housePriceGrowthRate = settings.housePriceGrowthPercent / 100;
+    let propertyGrowth = 0;
+    let mortgagePrincipalRepaid = 0;
+
+    for (const property of properties) {
+      const growth = property.currentValue * housePriceGrowthRate;
+      property.currentValue = Math.max(0, property.currentValue + growth);
+      propertyGrowth += growth;
+
+      if (property.mortgageOutstanding <= 0) {
+        property.mortgageOutstanding = 0;
+        property.mortgageYearsRemaining = Math.max(0, property.mortgageYearsRemaining - 1);
+        continue;
+      }
+
+      if (property.mortgageYearsRemaining <= 0) {
+        mortgagePrincipalRepaid += property.mortgageOutstanding;
+        property.mortgageOutstanding = 0;
+        continue;
+      }
+
+      const annualRate = property.mortgageRatePercent / 100;
+      let principalPaid = 0;
+
+      if (property.mortgageType === 'interest-only') {
+        if (property.mortgageYearsRemaining === 1) {
+          principalPaid = property.mortgageOutstanding;
+          property.mortgageOutstanding = 0;
+        }
+      } else {
+        const yearsRemaining = Math.max(1, property.mortgageYearsRemaining);
+        const annualPayment = annualRate > 0
+          ? property.mortgageOutstanding
+            * (annualRate / (1 - Math.pow(1 + annualRate, -yearsRemaining)))
+          : property.mortgageOutstanding / yearsRemaining;
+        const interest = property.mortgageOutstanding * annualRate;
+        principalPaid = Math.max(0, annualPayment - interest);
+        principalPaid = Math.min(property.mortgageOutstanding, principalPaid);
+        property.mortgageOutstanding = Math.max(0, property.mortgageOutstanding - principalPaid);
+      }
+
+      mortgagePrincipalRepaid += principalPaid;
+      property.mortgageYearsRemaining = Math.max(0, property.mortgageYearsRemaining - 1);
+    }
+
+    return { propertyGrowth, mortgagePrincipalRepaid };
+  }
+
+  private snapshotPropertyState(properties: PropertyProjectionState[]): {
+    totalPropertyValue: number;
+    totalMortgageRemaining: number;
+    totalPropertyEquity: number;
+  } {
+    const totalPropertyValue = properties.reduce((sum, property) => sum + property.currentValue, 0);
+    const totalMortgageRemaining = properties.reduce(
+      (sum, property) => sum + property.mortgageOutstanding,
+      0,
+    );
+
+    return {
+      totalPropertyValue,
+      totalMortgageRemaining,
+      totalPropertyEquity: totalPropertyValue - totalMortgageRemaining,
+    };
   }
 
   private calculateMonteCarlo(inputs: ForecastInputs): MonteCarloResult {

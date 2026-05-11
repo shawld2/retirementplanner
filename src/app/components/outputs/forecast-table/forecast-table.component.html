@@ -28,6 +28,36 @@
       <td mat-cell *matCellDef="let row">{{ row.totalPotValue | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="totalPropertyValue">
+      <th mat-header-cell *matHeaderCellDef>Total Property Value</th>
+      <td mat-cell *matCellDef="let row">{{ row.totalPropertyValue | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalMortgageRemaining">
+      <th mat-header-cell *matHeaderCellDef>Mortgage Remaining</th>
+      <td mat-cell *matCellDef="let row">{{ row.totalMortgageRemaining | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalPropertyEquity">
+      <th mat-header-cell *matHeaderCellDef>Property Equity</th>
+      <td mat-cell *matCellDef="let row">{{ row.totalPropertyEquity | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="rentalIncome">
+      <th mat-header-cell *matHeaderCellDef>Rental Income</th>
+      <td mat-cell *matCellDef="let row">{{ row.rentalIncome | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="propertyGrowth">
+      <th mat-header-cell *matHeaderCellDef>House Price Increase</th>
+      <td mat-cell *matCellDef="let row">{{ row.propertyGrowth | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="mortgagePrincipalRepaid">
+      <th mat-header-cell *matHeaderCellDef>Mortgage Principal Repaid</th>
+      <td mat-cell *matCellDef="let row">{{ row.mortgagePrincipalRepaid | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="dbIncome">
       <th mat-header-cell *matHeaderCellDef>DB Income</th>
       <td mat-cell *matCellDef="let row">{{ row.dbIncome | currency: 'GBP':'symbol':'1.0-0' }}</td>

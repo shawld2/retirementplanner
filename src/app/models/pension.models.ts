@@ -1,5 +1,7 @@
 export type ReturnScenario = 'low' | 'medium' | 'high';
 export type DrawdownPriority = 'pension-first' | 'isa-first';
+export type PropertyType = 'residential' | 'buy-to-let';
+export type MortgageType = 'repayment' | 'interest-only';
 
 /** A marginal income-tax band. `from` is the lower bound (inclusive). */
 export interface TaxBand {
@@ -36,8 +38,23 @@ export interface IsaPot {
   chargesPercent?: number;
 }
 
+export interface PropertyAsset {
+  id: string;
+  label: string;
+  propertyType: PropertyType;
+  currentValue: number;
+  mortgageType: MortgageType;
+  mortgageOutstanding: number;
+  mortgageRatePercent: number;
+  mortgageYearsRemaining: number;
+  annualRentalIncome: number;
+}
+
 export interface ProjectionSettings {
   inflationPercent: number;
+  rentalGrowthPercent: number;
+  housePriceGrowthPercent: number;
+  rentalOwnershipMePercent: number;
   globalChargesPercent: number;
   returnScenario: ReturnScenario;
   returnRates: { low: number; medium: number; high: number };
@@ -120,6 +137,7 @@ export interface FutureContributionEvent {
 export interface ForecastInputs {
   me: PersonInputs;
   partner?: PersonInputs;
+  properties: PropertyAsset[];
   settings: ProjectionSettings;
   lumpSums: LumpSumEvent[];
   futureContributions: FutureContributionEvent[];
@@ -140,6 +158,14 @@ export interface ForecastYear {
   remainingTaxFreeByPot: Record<string, number>;
   crystallisedByPot: Record<string, number>;
   totalPotValue: number;
+  totalPropertyValue: number;
+  totalMortgageRemaining: number;
+  totalPropertyEquity: number;
+  rentalIncome: number;
+  propertyGrowth: number;
+  mortgagePrincipalRepaid: number;
+  closingPropertyValue: number;
+  closingMortgageRemaining: number;
   dbIncome: number;
   stateIncome: number;
   drawdownRequired: number;

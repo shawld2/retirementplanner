@@ -50,6 +50,10 @@ export class PortfolioInputsComponent {
     return this.form().get('partnerIsas') as FormArray<FormGroup>;
   }
 
+  get properties(): FormArray<FormGroup> {
+    return this.form().get('properties') as FormArray<FormGroup>;
+  }
+
   addMeDc(): void {
     this.mePensions.push(this.createPension('DC', 'Me DC Pension'));
   }
@@ -72,6 +76,25 @@ export class PortfolioInputsComponent {
 
   addPartnerIsa(): void {
     this.partnerIsas.push(this.createIsa('Partner ISA'));
+  }
+
+  addProperty(): void {
+    this.properties.push(this.createProperty('Property'));
+  }
+
+  onPropertyTypeChanged(propertyGroup: FormGroup, propertyType: 'residential' | 'buy-to-let'): void {
+    const rentalControl = propertyGroup.get('annualRentalIncome');
+    if (!rentalControl) {
+      return;
+    }
+
+    if (propertyType === 'buy-to-let') {
+      rentalControl.enable({ emitEvent: false });
+      return;
+    }
+
+    rentalControl.setValue(0, { emitEvent: false });
+    rentalControl.disable({ emitEvent: false });
   }
 
   remove(arr: FormArray<FormGroup>, index: number): void {
@@ -101,6 +124,20 @@ export class PortfolioInputsComponent {
       currentValue: this.fb.control(0, [Validators.min(0)]),
       annualContribution: this.fb.control(0, [Validators.min(0)]),
       chargesPercent: this.fb.control(0),
+    });
+  }
+
+  createProperty(label: string): FormGroup {
+    return this.fb.group({
+      id: this.fb.control(crypto.randomUUID(), { nonNullable: true }),
+      label: this.fb.control(label, [Validators.required]),
+      propertyType: this.fb.control<'residential' | 'buy-to-let'>('residential', [Validators.required]),
+      currentValue: this.fb.control(0, [Validators.required, Validators.min(0)]),
+      mortgageType: this.fb.control<'repayment' | 'interest-only'>('repayment', [Validators.required]),
+      mortgageOutstanding: this.fb.control(0, [Validators.required, Validators.min(0)]),
+      mortgageRatePercent: this.fb.control(0, [Validators.required, Validators.min(0), Validators.max(100)]),
+      mortgageYearsRemaining: this.fb.control(0, [Validators.required, Validators.min(0), Validators.max(60)]),
+      annualRentalIncome: this.fb.control({ value: 0, disabled: true }, [Validators.required, Validators.min(0)]),
     });
   }
 }
