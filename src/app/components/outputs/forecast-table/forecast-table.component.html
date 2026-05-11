@@ -73,6 +73,21 @@
       <td mat-cell *matCellDef="let row">{{ row.drawdownTaken | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="drawdownFromPension">
+      <th mat-header-cell *matHeaderCellDef>Drawdown From Pensions</th>
+      <td mat-cell *matCellDef="let row">{{ row.drawdownFromPension | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="drawdownFromIsa">
+      <th mat-header-cell *matHeaderCellDef>Drawdown From ISAs</th>
+      <td mat-cell *matCellDef="let row">{{ row.drawdownFromIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="drawdownFromLisa">
+      <th mat-header-cell *matHeaderCellDef>Drawdown From LISA</th>
+      <td mat-cell *matCellDef="let row">{{ row.drawdownFromLisa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="futureContributionsAdded">
       <th mat-header-cell *matHeaderCellDef>Additional Contributions</th>
       <td mat-cell *matCellDef="let row">{{ row.futureContributionsAdded | currency: 'GBP':'symbol':'1.0-0' }}</td>
@@ -91,6 +106,11 @@
     <ng-container matColumnDef="lumpSumsFromIsa">
       <th mat-header-cell *matHeaderCellDef>Lump Sums From ISAs</th>
       <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromIsa | currency: 'GBP':'symbol':'1.0-0' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSumsFromLisa">
+      <th mat-header-cell *matHeaderCellDef>Lump Sums From LISA</th>
+      <td mat-cell *matCellDef="let row">{{ row.lumpSumsFromLisa | currency: 'GBP':'symbol':'1.0-0' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="pclsConsumedThisYear">

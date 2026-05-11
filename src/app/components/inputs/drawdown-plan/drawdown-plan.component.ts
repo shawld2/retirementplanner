@@ -56,6 +56,10 @@ export class DrawdownPlanComponent {
         age: this.fb.control(65, [Validators.required]),
         amount: this.fb.control(0, [Validators.required, Validators.min(0)]),
         fromSource: this.fb.control('any', [Validators.required]),
+        lisaUseForFirstHome: this.fb.control(false, [Validators.required]),
+        lisaFirstTimeBuyer: this.fb.control(false, [Validators.required]),
+        lisaPropertyPrice: this.fb.control(0, [Validators.min(0)]),
+        lisaMonthsOpen: this.fb.control(0, [Validators.min(0)]),
       }),
     );
     this.sortArrayByAge(this.lumpSums);

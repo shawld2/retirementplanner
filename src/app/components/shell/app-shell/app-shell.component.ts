@@ -74,9 +74,9 @@ export class AppShellComponent implements OnDestroy {
     }),
     portfolio: this.fb.group({
       mePensions: this.fb.array([this.createPension('Me Workplace DC', 'DC')]),
-      meIsas: this.fb.array([this.createIsa('Me ISA')]),
+      meIsas: this.fb.array([this.createIsa('Me ISA', 'ISA')]),
       partnerPensions: this.fb.array([this.createPension('Partner Pension', 'DB')]),
-      partnerIsas: this.fb.array([this.createIsa('Partner ISA')]),
+      partnerIsas: this.fb.array([this.createIsa('Partner ISA', 'ISA')]),
       properties: this.fb.array([]),
     }),
     settings: this.fb.group({
@@ -181,7 +181,14 @@ export class AppShellComponent implements OnDestroy {
     return all
       .filter((p) => !!p['id'])
       .filter((p) => p['type'] !== 'DB')
-      .map((p) => ({ id: p['id'] as string, label: (p['label'] as string) || (p['id'] as string) }));
+      .map((p) => {
+        const accountType = p['isaType'] === 'LISA' ? 'LISA' : (p['isaType'] === 'ISA' ? 'ISA' : 'Pension');
+        const baseLabel = (p['label'] as string) || (p['id'] as string);
+        return {
+          id: p['id'] as string,
+          label: `${baseLabel} (${accountType})`,
+        };
+      });
   }
 
   recalculate(): void {
@@ -281,10 +288,11 @@ export class AppShellComponent implements OnDestroy {
     });
   }
 
-  private createIsa(label: string): FormGroup {
+  private createIsa(label: string, isaType: 'ISA' | 'LISA'): FormGroup {
     return this.fb.group({
       id: this.fb.control(crypto.randomUUID(), { nonNullable: true }),
       label: this.fb.control(label, [Validators.required]),
+      isaType: this.fb.control<'ISA' | 'LISA'>(isaType, [Validators.required]),
       currentValue: this.fb.control(25000, [Validators.min(0)]),
       annualContribution: this.fb.control(4000, [Validators.min(0)]),
       chargesPercent: this.fb.control(0),
@@ -301,6 +309,10 @@ export class AppShellComponent implements OnDestroy {
       ...e,
       age: Number(e.age),
       amount: Number(e.amount),
+      lisaUseForFirstHome: !!e.lisaUseForFirstHome,
+      lisaFirstTimeBuyer: !!e.lisaFirstTimeBuyer,
+      lisaPropertyPrice: Number(e.lisaPropertyPrice ?? 0),
+      lisaMonthsOpen: Number(e.lisaMonthsOpen ?? 0),
     }));
 
     const futureContributions = ((drawdown.futureContributions ?? []) as FutureContributionEvent[]).map((e) => ({
@@ -424,6 +436,7 @@ export class AppShellComponent implements OnDestroy {
       (v) => this.fb.group({
         id: this.fb.control(v.id ?? crypto.randomUUID(), { nonNullable: true }),
         label: this.fb.control(v.label ?? 'Me ISA'),
+        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : 'ISA'),
         currentValue: this.fb.control(v.currentValue ?? 0),
         annualContribution: this.fb.control(v.annualContribution ?? 0),
         chargesPercent: this.fb.control(v.chargesPercent ?? 0),
@@ -454,6 +467,7 @@ export class AppShellComponent implements OnDestroy {
       (v) => this.fb.group({
         id: this.fb.control(v.id ?? crypto.randomUUID(), { nonNullable: true }),
         label: this.fb.control(v.label ?? 'Partner ISA'),
+        isaType: this.fb.control(v.isaType === 'LISA' ? 'LISA' : 'ISA'),
         currentValue: this.fb.control(v.currentValue ?? 0),
         annualContribution: this.fb.control(v.annualContribution ?? 0),
         chargesPercent: this.fb.control(v.chargesPercent ?? 0),
@@ -495,6 +509,10 @@ export class AppShellComponent implements OnDestroy {
           age: this.fb.control(v.age ?? 65),
           amount: this.fb.control(v.amount ?? 0),
           fromSource: this.fb.control(v.fromSource ?? 'any'),
+          lisaUseForFirstHome: this.fb.control(!!v.lisaUseForFirstHome),
+          lisaFirstTimeBuyer: this.fb.control(!!v.lisaFirstTimeBuyer),
+          lisaPropertyPrice: this.fb.control(v.lisaPropertyPrice ?? 0),
+          lisaMonthsOpen: this.fb.control(v.lisaMonthsOpen ?? 0),
         }),
     );
 

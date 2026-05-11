@@ -10,7 +10,7 @@
       <div class="actions">
         <button mat-stroked-button type="button" (click)="addMeDb()">Add DB Pension</button>
         <button mat-stroked-button type="button" (click)="addMeDc()">Add DC Pension</button>
-        <button mat-stroked-button type="button" (click)="addMeIsa()">Add ISA</button>
+        <button mat-stroked-button type="button" (click)="addMeIsa()">Add ISA / LISA</button>
       </div>
 
       <h3>DC Pensions</h3>
@@ -59,11 +59,19 @@
       </div>
 
       <h3>ISAs</h3>
+      <p class="helper">LISA rules in projection: up to GBP 4,000 contributions per year with 25% bonus, contributions stop at age 50, and withdrawals before age 60 incur a 25% charge.</p>
       <div formArrayName="meIsas" class="card-list">
         @for (isa of meIsas.controls; track isa; let i = $index) {
           <div class="pot-card pot-card-isa" [formGroupName]="i">
             <div class="grid">
               <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Account type</mat-label>
+                <mat-select formControlName="isaType">
+                  <mat-option value="ISA">ISA</mat-option>
+                  <mat-option value="LISA">LISA</mat-option>
+                </mat-select>
+              </mat-form-field>
               <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
               <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
               <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
@@ -87,7 +95,7 @@
         <div class="actions">
           <button mat-stroked-button type="button" (click)="addPartnerDb()">Add DB Pension</button>
           <button mat-stroked-button type="button" (click)="addPartnerDc()">Add DC Pension</button>
-          <button mat-stroked-button type="button" (click)="addPartnerIsa()">Add ISA</button>
+          <button mat-stroked-button type="button" (click)="addPartnerIsa()">Add ISA / LISA</button>
         </div>
 
         <h3>DC Pensions</h3>
@@ -136,11 +144,19 @@
         </div>
 
         <h3>ISAs</h3>
+        <p class="helper">LISA rules in projection: up to GBP 4,000 contributions per year with 25% bonus, contributions stop at age 50, and withdrawals before age 60 incur a 25% charge.</p>
         <div formArrayName="partnerIsas" class="card-list">
           @for (isa of partnerIsas.controls; track isa; let i = $index) {
             <div class="pot-card pot-card-isa" [formGroupName]="i">
               <div class="grid">
                 <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Account type</mat-label>
+                  <mat-select formControlName="isaType">
+                    <mat-option value="ISA">ISA</mat-option>
+                    <mat-option value="LISA">LISA</mat-option>
+                  </mat-select>
+                </mat-form-field>
                 <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
                 <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
                 <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>

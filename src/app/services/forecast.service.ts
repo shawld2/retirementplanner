@@ -18,6 +18,7 @@ interface LiquidPotState {
   owner: 'me' | 'partner';
   kind: 'dc' | 'isa';
   sourceType: 'pension' | 'isa';
+  isaType?: 'ISA' | 'LISA';
   pensionType?: 'DC' | 'DB';
   balance: number;
   uncrystallisedBalance?: number;
@@ -46,6 +47,7 @@ interface OwnerAmounts {
 interface SourceAmounts {
   pension: number;
   isa: number;
+  lisa: number;
 }
 
 interface WithdrawalResult {
@@ -69,6 +71,7 @@ interface LumpSumResult {
 interface TaxApplicationResult {
   taxable: number;
   pclsUsed: number;
+  received: number;
 }
 
 type RandomFn = () => number;
@@ -262,6 +265,8 @@ export class ForecastService {
           guaranteedIncome,
           eligiblePots,
           drawdownPlan.fromSource,
+          meAge,
+          partnerAge,
           inputs.settings.drawdownPriority,
           inputs.settings.applyPCLSLimit,
           pclsUsed,
@@ -283,6 +288,8 @@ export class ForecastService {
           eligiblePots.filter((p) => p.owner === 'me'),
           meTarget,
           drawdownPlan.fromSource,
+          meAge,
+          partnerAge,
           inputs.settings.drawdownPriority,
           notes,
           inputs.settings.applyPCLSLimit,
@@ -296,6 +303,8 @@ export class ForecastService {
           eligiblePots.filter((p) => p.owner === 'partner'),
           partnerTarget,
           drawdownPlan.fromSource,
+          meAge,
+          partnerAge,
           inputs.settings.drawdownPriority,
           notes,
           inputs.settings.applyPCLSLimit,
@@ -320,6 +329,7 @@ export class ForecastService {
           bySourceType: {
             pension: meResult.bySourceType.pension + partnerResult.bySourceType.pension,
             isa: meResult.bySourceType.isa + partnerResult.bySourceType.isa,
+            lisa: meResult.bySourceType.lisa + partnerResult.bySourceType.lisa,
           },
         };
 
@@ -329,6 +339,8 @@ export class ForecastService {
             eligiblePots,
             unmet,
             drawdownPlan.fromSource,
+            meAge,
+            partnerAge,
             inputs.settings.drawdownPriority,
             notes,
             inputs.settings.applyPCLSLimit,
@@ -353,6 +365,7 @@ export class ForecastService {
             bySourceType: {
               pension: drawdownResult.bySourceType.pension + topUp.bySourceType.pension,
               isa: drawdownResult.bySourceType.isa + topUp.bySourceType.isa,
+              lisa: drawdownResult.bySourceType.lisa + topUp.bySourceType.lisa,
             },
           };
         }
@@ -361,6 +374,8 @@ export class ForecastService {
           eligiblePots,
           requiredFromPots,
           drawdownPlan.fromSource,
+          meAge,
+          partnerAge,
           inputs.settings.drawdownPriority,
           notes,
           inputs.settings.applyPCLSLimit,
@@ -376,6 +391,7 @@ export class ForecastService {
         eligiblePots,
         inputs.lumpSums,
         meAge,
+        partnerAge,
         inputs.settings.drawdownPriority,
         notes,
         inputs.settings.applyPCLSLimit,
@@ -470,11 +486,15 @@ export class ForecastService {
         stateIncome,
         drawdownRequired,
         drawdownTaken: drawdownResult.total,
+        drawdownFromPension: drawdownResult.bySourceType.pension,
+        drawdownFromIsa: drawdownResult.bySourceType.isa,
+        drawdownFromLisa: drawdownResult.bySourceType.lisa,
         drawdownTaxable: drawdownResult.taxable,
         futureContributionsAdded,
         lumpSumsTaken: lumpSumResult.total,
         lumpSumsFromPension: lumpSumResult.bySourceType.pension,
         lumpSumsFromIsa: lumpSumResult.bySourceType.isa,
+        lumpSumsFromLisa: lumpSumResult.bySourceType.lisa,
         lumpSumsTaxable: lumpSumResult.taxable,
         pclsConsumedThisYear,
         taxableWithdrawals: drawdownResult.taxable + lumpSumResult.taxable,
@@ -768,6 +788,7 @@ export class ForecastService {
         owner: 'me',
         kind: 'isa',
         sourceType: 'isa',
+        isaType: isa.isaType === 'LISA' ? 'LISA' : 'ISA',
         balance: isa.currentValue,
         chargesPercent: isa.chargesPercent,
         annualContribution: isa.annualContribution,
@@ -804,6 +825,7 @@ export class ForecastService {
           owner: 'partner',
           kind: 'isa',
           sourceType: 'isa',
+          isaType: isa.isaType === 'LISA' ? 'LISA' : 'ISA',
           balance: isa.currentValue,
           chargesPercent: isa.chargesPercent,
           annualContribution: isa.annualContribution,
@@ -821,16 +843,53 @@ export class ForecastService {
     meAge: number,
     partnerAge: number | undefined,
   ): void {
-    for (const pot of pots) {
+    const applyOwnerIsaContributions = (owner: 'me' | 'partner', ownerAge: number | undefined): void => {
+      if (ownerAge === undefined) {
+        return;
+      }
+
+      let isaAllowanceRemaining = 20000;
+      const isaPots = pots
+        .filter((pot) => pot.owner === owner && pot.kind === 'isa')
+        .sort((a, b) => Number(b.isaType === 'LISA') - Number(a.isaType === 'LISA'));
+
+      for (const pot of isaPots) {
+        const requested = Math.max(0, pot.annualContribution);
+        if (requested <= 0 || isaAllowanceRemaining <= 0) {
+          continue;
+        }
+
+        if (pot.isaType === 'LISA') {
+          if (ownerAge < 18 || ownerAge >= 50) {
+            continue;
+          }
+
+          const lisaContribution = Math.min(requested, 4000, isaAllowanceRemaining);
+          const lisaBonus = lisaContribution * 0.25;
+          pot.balance += lisaContribution + lisaBonus;
+          isaAllowanceRemaining -= lisaContribution;
+          continue;
+        }
+
+        const isaContribution = Math.min(requested, isaAllowanceRemaining);
+        pot.balance += isaContribution;
+        isaAllowanceRemaining -= isaContribution;
+      }
+    };
+
+    applyOwnerIsaContributions('me', meAge);
+    if (inputs.partner) {
+      applyOwnerIsaContributions('partner', partnerAge);
+    }
+
+    for (const pot of pots.filter((p) => p.kind === 'dc')) {
       const ownerRetired = pot.owner === 'me'
         ? meAge >= inputs.me.retirementAge
         : !inputs.partner || partnerAge === undefined || partnerAge >= inputs.partner.retirementAge;
 
       if (!ownerRetired && pot.annualContribution > 0) {
         pot.balance += pot.annualContribution;
-        if (pot.kind === 'dc') {
-          pot.uncrystallisedBalance = (pot.uncrystallisedBalance ?? 0) + pot.annualContribution;
-        }
+        pot.uncrystallisedBalance = (pot.uncrystallisedBalance ?? 0) + pot.annualContribution;
       }
     }
   }
@@ -977,6 +1036,7 @@ export class ForecastService {
     pots: LiquidPotState[],
     lumpSums: LumpSumEvent[],
     meAge: number,
+    partnerAge: number | undefined,
     drawdownPriority: DrawdownPriority,
     notes: string[],
     applyPclsLimit: boolean,
@@ -993,10 +1053,28 @@ export class ForecastService {
     const bySourceType = this.emptySourceAmounts();
 
     for (const event of lumpSums.filter((e) => e.age === meAge)) {
+      const qualifiesLisaFirstHome = this.isQualifyingLisaFirstHomeWithdrawal(event);
+      const resolvedSource = event.lisaUseForFirstHome
+        ? this.resolveLisaPreferredSource(pots, event.fromSource)
+        : event.fromSource;
+      if (event.lisaUseForFirstHome && !qualifiesLisaFirstHome) {
+        notes.push(
+          `LISA first-home rules not met for ${event.label}; pre-60 LISA withdrawals use the 25% charge.`,
+        );
+      }
+
+      if (event.lisaUseForFirstHome && resolvedSource !== event.fromSource) {
+        notes.push(
+          `LISA first-home event ${event.label} routed to an available LISA pot.`,
+        );
+      }
+
       const amountTaken = this.withdrawFromPots(
         pots,
         event.amount,
-        event.fromSource,
+        resolvedSource,
+        meAge,
+        partnerAge,
         drawdownPriority,
         notes,
         applyPclsLimit,
@@ -1004,6 +1082,7 @@ export class ForecastService {
         pclsWithdrawnByPot,
         crystallisedByPot,
         allowTaxFreeCash,
+        qualifiesLisaFirstHome,
       );
       taken += amountTaken.total;
       taxable += amountTaken.taxable;
@@ -1014,6 +1093,7 @@ export class ForecastService {
       taxableByOwner.partner += amountTaken.taxableByOwner.partner;
       bySourceType.pension += amountTaken.bySourceType.pension;
       bySourceType.isa += amountTaken.bySourceType.isa;
+      bySourceType.lisa += amountTaken.bySourceType.lisa;
       notes.push(
         `Lump sum event ${event.label}: ${Math.round(amountTaken.total).toLocaleString()}`,
       );
@@ -1022,10 +1102,47 @@ export class ForecastService {
     return { total: taken, taxable, pclsUsed: runningPclsUsed, byOwner, taxableByOwner, bySourceType };
   }
 
+  private isQualifyingLisaFirstHomeWithdrawal(event: LumpSumEvent): boolean {
+    if (!event.lisaUseForFirstHome) {
+      return false;
+    }
+
+    const propertyPrice = Number(event.lisaPropertyPrice ?? 0);
+    const monthsOpen = Number(event.lisaMonthsOpen ?? 0);
+
+    return !!event.lisaFirstTimeBuyer
+      && propertyPrice > 0
+      && propertyPrice <= 450000
+      && monthsOpen >= 12;
+  }
+
+  private resolveLisaPreferredSource(pots: LiquidPotState[], requestedSource: string): string {
+    const lisaCandidates = pots
+      .filter((pot) => pot.kind === 'isa' && pot.isaType === 'LISA' && pot.balance > 0)
+      .sort((a, b) => b.balance - a.balance);
+
+    if (!lisaCandidates.length) {
+      return requestedSource;
+    }
+
+    if (!requestedSource || requestedSource === 'any' || requestedSource === 'proportional') {
+      return lisaCandidates[0].id;
+    }
+
+    const requestedPot = pots.find((pot) => pot.id === requestedSource);
+    if (requestedPot?.kind === 'isa' && requestedPot.isaType === 'LISA') {
+      return requestedSource;
+    }
+
+    return lisaCandidates[0].id;
+  }
+
   private withdrawFromPots(
     pots: LiquidPotState[],
     required: number,
     fromSource: string,
+    meAge: number,
+    partnerAge: number | undefined,
     drawdownPriority: DrawdownPriority,
     notes: string[],
     applyPclsLimit = false,
@@ -1033,6 +1150,7 @@ export class ForecastService {
     pclsWithdrawnByPot: Record<string, number> = {},
     crystallisedByPot: Record<string, number> = {},
     allowTaxFreeCash = false,
+    qualifiesLisaFirstHome = false,
   ): WithdrawalResult {
     if (required <= 0) {
       return {
@@ -1057,21 +1175,27 @@ export class ForecastService {
       if (source && source.balance > 0) {
         const take = Math.min(source.balance, remaining);
         source.balance -= take;
-        remaining -= take;
         const applied = this.applyWithdrawalTax(
           source,
           take,
+          source.owner === 'me' ? meAge : partnerAge,
+          qualifiesLisaFirstHome,
           applyPclsLimit,
           runningPclsUsed,
           pclsWithdrawnByPot,
           crystallisedByPot,
           allowTaxFreeCash,
         );
+        remaining -= applied.received;
         taxable += applied.taxable;
         runningPclsUsed = applied.pclsUsed;
-        byOwner[source.owner] += take;
+        byOwner[source.owner] += applied.received;
         taxableByOwner[source.owner] += applied.taxable;
-        bySourceType[source.sourceType] += take;
+        if (source.sourceType === 'isa' && source.isaType === 'LISA') {
+          bySourceType.lisa += applied.received;
+        } else {
+          bySourceType[source.sourceType] += applied.received;
+        }
       }
     }
 
@@ -1085,11 +1209,14 @@ export class ForecastService {
         const result = this.withdrawProportionally(
           candidates,
           remaining,
+          meAge,
+          partnerAge,
           applyPclsLimit,
           runningPclsUsed,
           pclsWithdrawnByPot,
           crystallisedByPot,
           allowTaxFreeCash,
+          qualifiesLisaFirstHome,
         );
         remaining = result.remaining;
         taxable += result.taxable;
@@ -1100,6 +1227,7 @@ export class ForecastService {
         taxableByOwner.partner += result.taxableByOwner.partner;
         bySourceType.pension += result.bySourceType.pension;
         bySourceType.isa += result.bySourceType.isa;
+        bySourceType.lisa += result.bySourceType.lisa;
       }
     }
 
@@ -1116,21 +1244,27 @@ export class ForecastService {
         for (const pot of potsByKind) {
           const take = Math.min(pot.balance, remaining);
           pot.balance -= take;
-          remaining -= take;
           const applied = this.applyWithdrawalTax(
             pot,
             take,
+            pot.owner === 'me' ? meAge : partnerAge,
+            qualifiesLisaFirstHome,
             applyPclsLimit,
             runningPclsUsed,
             pclsWithdrawnByPot,
             crystallisedByPot,
             allowTaxFreeCash,
           );
+          remaining -= applied.received;
           taxable += applied.taxable;
           runningPclsUsed = applied.pclsUsed;
-          byOwner[pot.owner] += take;
+          byOwner[pot.owner] += applied.received;
           taxableByOwner[pot.owner] += applied.taxable;
-          bySourceType[pot.sourceType] += take;
+          if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
+            bySourceType.lisa += applied.received;
+          } else {
+            bySourceType[pot.sourceType] += applied.received;
+          }
           if (remaining <= 0) {
             break;
           }
@@ -1160,11 +1294,14 @@ export class ForecastService {
   private withdrawProportionally(
     candidates: LiquidPotState[],
     required: number,
+    meAge: number,
+    partnerAge: number | undefined,
     applyPclsLimit: boolean,
     pclsUsed: number,
     pclsWithdrawnByPot: Record<string, number>,
     crystallisedByPot: Record<string, number>,
     allowTaxFreeCash: boolean,
+    qualifiesLisaFirstHome: boolean,
   ): {
     remaining: number;
     taxable: number;
@@ -1211,21 +1348,27 @@ export class ForecastService {
       const share = required * (pot.balance / total);
       const take = Math.min(pot.balance, share, remaining);
       pot.balance -= take;
-      remaining -= take;
       const applied = this.applyWithdrawalTax(
         pot,
         take,
+        pot.owner === 'me' ? meAge : partnerAge,
+        qualifiesLisaFirstHome,
         applyPclsLimit,
         runningPclsUsed,
         pclsWithdrawnByPot,
         crystallisedByPot,
         allowTaxFreeCash,
       );
+      remaining -= applied.received;
       taxable += applied.taxable;
       runningPclsUsed = applied.pclsUsed;
-      byOwner[pot.owner] += take;
+      byOwner[pot.owner] += applied.received;
       taxableByOwner[pot.owner] += applied.taxable;
-      bySourceType[pot.sourceType] += take;
+      if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
+        bySourceType.lisa += applied.received;
+      } else {
+        bySourceType[pot.sourceType] += applied.received;
+      }
     }
 
     if (remaining > 0.01) {
@@ -1236,21 +1379,27 @@ export class ForecastService {
 
         const take = Math.min(pot.balance, remaining);
         pot.balance -= take;
-        remaining -= take;
         const applied = this.applyWithdrawalTax(
           pot,
           take,
+          pot.owner === 'me' ? meAge : partnerAge,
+          qualifiesLisaFirstHome,
           applyPclsLimit,
           runningPclsUsed,
           pclsWithdrawnByPot,
           crystallisedByPot,
           allowTaxFreeCash,
         );
+        remaining -= applied.received;
         taxable += applied.taxable;
         runningPclsUsed = applied.pclsUsed;
-        byOwner[pot.owner] += take;
+        byOwner[pot.owner] += applied.received;
         taxableByOwner[pot.owner] += applied.taxable;
-        bySourceType[pot.sourceType] += take;
+        if (pot.sourceType === 'isa' && pot.isaType === 'LISA') {
+          bySourceType.lisa += applied.received;
+        } else {
+          bySourceType[pot.sourceType] += applied.received;
+        }
       }
     }
 
@@ -1269,7 +1418,7 @@ export class ForecastService {
   }
 
   private emptySourceAmounts(): SourceAmounts {
-    return { pension: 0, isa: 0 };
+    return { pension: 0, isa: 0, lisa: 0 };
   }
 
   private applyGrowth(
@@ -1422,23 +1571,42 @@ export class ForecastService {
   private applyWithdrawalTax(
     pot: LiquidPotState,
     amount: number,
+    ownerAge: number | undefined,
+    qualifiesLisaFirstHome: boolean,
     applyPclsLimit: boolean,
     pclsUsed: number,
     pclsWithdrawnByPot: Record<string, number>,
     crystallisedByPot: Record<string, number>,
     allowTaxFreeCash: boolean,
   ): TaxApplicationResult {
-    if (amount <= 0 || pot.kind !== 'dc') {
-      return { taxable: 0, pclsUsed };
+    if (amount <= 0) {
+      return { taxable: 0, pclsUsed, received: 0 };
+    }
+
+    if (pot.kind === 'isa') {
+      if (pot.isaType === 'LISA' && (ownerAge ?? 0) < 60) {
+        if (qualifiesLisaFirstHome) {
+          return { taxable: 0, pclsUsed, received: amount };
+        }
+
+        return {
+          taxable: 0,
+          pclsUsed,
+          // 25% withdrawal charge for non-qualifying LISA withdrawals before age 60.
+          received: amount * 0.75,
+        };
+      }
+
+      return { taxable: 0, pclsUsed, received: amount };
     }
 
     if (!allowTaxFreeCash) {
-      return { taxable: amount, pclsUsed };
+      return { taxable: amount, pclsUsed, received: amount };
     }
 
     const pct = Math.max(0, Math.min(25, pot.taxFreePercentage));
     if (pct <= 0) {
-      return { taxable: amount, pclsUsed };
+      return { taxable: amount, pclsUsed, received: amount };
     }
 
     const uncrystallised = Math.max(0, pot.uncrystallisedBalance ?? 0);
@@ -1449,7 +1617,7 @@ export class ForecastService {
     const taxFree = Math.min(requestedTaxFree, availableTaxFreeCash);
 
     if (taxFree <= 0) {
-      return { taxable: amount, pclsUsed };
+      return { taxable: amount, pclsUsed, received: amount };
     }
 
     const crystallisedAmount = taxFree / (pct / 100);
@@ -1460,7 +1628,7 @@ export class ForecastService {
     pot.uncrystallisedBalance = Math.max(0, uncrystallised - crystallisedAmount);
 
     const taxable = amount - taxFree;
-    return { taxable, pclsUsed: nextPclsUsed };
+    return { taxable, pclsUsed: nextPclsUsed, received: amount };
   }
 
   private getDbPensionStartAge(pension: PensionPot, fallbackRetirementAge: number): number {
@@ -1514,6 +1682,8 @@ export class ForecastService {
     guaranteedTaxable: number,
     pots: LiquidPotState[],
     fromSource: string,
+    meAge: number,
+    partnerAge: number | undefined,
     drawdownPriority: DrawdownPriority,
     applyPclsLimit: boolean,
     pclsUsed: number,
@@ -1534,6 +1704,8 @@ export class ForecastService {
         pots,
         gross,
         fromSource,
+        meAge,
+        partnerAge,
         drawdownPriority,
         applyPclsLimit,
         pclsUsed,
@@ -1559,6 +1731,8 @@ export class ForecastService {
     pots: LiquidPotState[],
     required: number,
     fromSource: string,
+    meAge: number,
+    partnerAge: number | undefined,
     drawdownPriority: DrawdownPriority,
     applyPclsLimit: boolean,
     pclsUsed: number,
@@ -1576,6 +1750,8 @@ export class ForecastService {
       simulationPots,
       required,
       fromSource,
+      meAge,
+      partnerAge,
       drawdownPriority,
       [],
       applyPclsLimit,

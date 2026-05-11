@@ -5,7 +5,7 @@
     <h3>Lump Sums</h3>
     <button mat-stroked-button type="button" (click)="addLumpSum()">Add Lump Sum</button>
   </div>
-  <p class="helper">Tax is calculated automatically from source withdrawals (ISA tax-free, pension withdrawals taxable).</p>
+  <p class="helper">Tax is calculated automatically from source withdrawals (ISA tax-free, pension withdrawals taxable). LISA withdrawals before age 60 apply a 25% charge unless they qualify for first-home use (first-time buyer, property price up to GBP 450,000, and account open at least 12 months).</p>
 
   <div formArrayName="lumpSums" class="card-list">
     @for (row of lumpSums.controls; track row; let i = $index) {
@@ -22,6 +22,30 @@
             }
           </mat-select>
         </mat-form-field>
+        <mat-form-field appearance="outline" class="field-source">
+          <mat-label>LISA use</mat-label>
+          <mat-select formControlName="lisaUseForFirstHome">
+            <mat-option [value]="false">Standard withdrawal</mat-option>
+            <mat-option [value]="true">Qualifying first home purchase</mat-option>
+          </mat-select>
+        </mat-form-field>
+        @if (row.get('lisaUseForFirstHome')?.value) {
+          <mat-form-field appearance="outline" class="field-source">
+            <mat-label>First-time buyer</mat-label>
+            <mat-select formControlName="lisaFirstTimeBuyer">
+              <mat-option [value]="true">Yes</mat-option>
+              <mat-option [value]="false">No</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-amount">
+            <mat-label>Property price</mat-label>
+            <input matInput class="num-input" type="number" formControlName="lisaPropertyPrice" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-age">
+            <mat-label>LISA months open</mat-label>
+            <input matInput class="num-input" type="number" formControlName="lisaMonthsOpen" />
+          </mat-form-field>
+        }
         <button type="button" class="remove-btn" (click)="remove(lumpSums, i)">&times;</button>
       </div>
     }

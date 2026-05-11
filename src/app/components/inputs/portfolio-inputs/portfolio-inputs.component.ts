@@ -71,11 +71,11 @@ export class PortfolioInputsComponent {
   }
 
   addMeIsa(): void {
-    this.meIsas.push(this.createIsa('Me ISA'));
+    this.meIsas.push(this.createIsa('Me ISA', 'ISA'));
   }
 
   addPartnerIsa(): void {
-    this.partnerIsas.push(this.createIsa('Partner ISA'));
+    this.partnerIsas.push(this.createIsa('Partner ISA', 'ISA'));
   }
 
   addProperty(): void {
@@ -117,10 +117,11 @@ export class PortfolioInputsComponent {
     });
   }
 
-  createIsa(label: string): FormGroup {
+  createIsa(label: string, isaType: 'ISA' | 'LISA'): FormGroup {
     return this.fb.group({
       id: this.fb.control(crypto.randomUUID(), { nonNullable: true }),
       label: this.fb.control(label, [Validators.required]),
+      isaType: this.fb.control<'ISA' | 'LISA'>(isaType, [Validators.required]),
       currentValue: this.fb.control(0, [Validators.min(0)]),
       annualContribution: this.fb.control(0, [Validators.min(0)]),
       chargesPercent: this.fb.control(0),

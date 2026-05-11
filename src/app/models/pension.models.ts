@@ -33,6 +33,7 @@ export interface PensionPot {
 export interface IsaPot {
   id: string;
   label: string;
+  isaType: 'ISA' | 'LISA';
   currentValue: number;
   annualContribution: number;
   chargesPercent?: number;
@@ -116,6 +117,10 @@ export interface LumpSumEvent {
   age: number;
   amount: number;
   fromSource: string;
+  lisaUseForFirstHome?: boolean;
+  lisaFirstTimeBuyer?: boolean;
+  lisaPropertyPrice?: number;
+  lisaMonthsOpen?: number;
   // Deprecated: taxability is now inferred from actual source withdrawals.
   taxable?: boolean;
 }
@@ -170,11 +175,15 @@ export interface ForecastYear {
   stateIncome: number;
   drawdownRequired: number;
   drawdownTaken: number;
+  drawdownFromPension: number;
+  drawdownFromIsa: number;
+  drawdownFromLisa: number;
   drawdownTaxable: number;
   futureContributionsAdded: number;
   lumpSumsTaken: number;
   lumpSumsFromPension: number;
   lumpSumsFromIsa: number;
+  lumpSumsFromLisa: number;
   lumpSumsTaxable: number;
   pclsConsumedThisYear: number;
   taxableWithdrawals: number;
