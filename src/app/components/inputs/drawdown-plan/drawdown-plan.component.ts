@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormBuilder,
@@ -8,9 +9,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import {
+  CustomSelectComponent,
+  SelectOption,
+} from '../../shared/custom-select/custom-select.component';
+import { CustomInputComponent } from '../../shared/custom-input/custom-input.component';
 
 @Component({
   selector: 'app-drawdown-plan',
@@ -19,21 +22,50 @@ import { MatSelectModule } from '@angular/material/select';
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
+    CustomInputComponent,
+    CustomSelectComponent,
   ],
   templateUrl: './drawdown-plan.component.html',
   styleUrl: './drawdown-plan.component.scss',
 })
 export class DrawdownPlanComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = input.required<FormGroup>();
   readonly sourceOptions = input.required<Array<{ id: string; label: string }>>();
+  readonly lumpSumSourceOptions = computed<SelectOption[]>(() => [
+    { value: 'any', label: 'Any (largest first)' },
+    ...this.sourceOptions().map((source) => ({ value: source.id, label: source.label })),
+  ]);
+  readonly futureContributionTargetOptions = computed<SelectOption[]>(() => [
+    { value: 'any', label: 'Any (largest eligible)' },
+    ...this.sourceOptions().map((source) => ({ value: source.id, label: source.label })),
+  ]);
+  readonly drawdownSourceOptions = computed<SelectOption[]>(() => [
+    { value: 'proportional', label: 'Proportional across eligible pots' },
+    ...this.sourceOptions().map((source) => ({ value: source.id, label: source.label })),
+  ]);
+  readonly lisaUseOptions: SelectOption[] = [
+    { value: false, label: 'Standard withdrawal' },
+    { value: true, label: 'Qualifying first home purchase' },
+  ];
+  readonly yesNoOptions: SelectOption[] = [
+    { value: true, label: 'Yes' },
+    { value: false, label: 'No' },
+  ];
 
   ngOnInit(): void {
     this.sortAllByAge();
+    this.lumpSums.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.sortArrayByAge(this.lumpSums));
+    this.futureContributions.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.sortArrayByAge(this.futureContributions));
+    this.drawdownSchedule.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.sortArrayByAge(this.drawdownSchedule));
   }
 
   get lumpSums(): FormArray<FormGroup> {

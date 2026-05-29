@@ -72,7 +72,7 @@
 
           <!-- Step 4: Drawdown Plan -->
           <mat-step [stepControl]="drawdownGroup" label="Drawdown Plan">
-            <app-drawdown-plan [form]="drawdownGroup" [sourceOptions]="sourceOptions" />
+            <app-drawdown-plan [form]="drawdownGroup" [sourceOptions]="sourceOptions()" />
             <div class="step-actions">
               <button mat-button matStepperPrevious>Back</button>
               <button mat-flat-button matStepperNext color="primary">Next</button>

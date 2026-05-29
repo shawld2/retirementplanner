@@ -56,9 +56,11 @@
   }
 }
 
-.row mat-form-field {
+.row app-custom-input,
+.row app-custom-select {
   margin: 0;
   min-width: 0;
+  display: block;
 }
 
 .field-label {
@@ -87,37 +89,11 @@
   max-width: 340px;
 }
 
-.num-input {
-  font-size: $font-base;
-  font-weight: $font-weight-medium;
-}
-
 .helper {
   margin: 0 0 $spacing-4 0;
   font-size: $font-sm;
   color: $text-tertiary;
   line-height: $line-height-relaxed;
-}
-
-.row ::ng-deep .mat-mdc-form-field-subscript-wrapper,
-.row ::ng-deep .mat-mdc-form-field-bottom-align::before {
-  display: none !important;
-  height: 0 !important;
-}
-
-.row ::ng-deep .mat-mdc-form-field-wrapper,
-.row ::ng-deep .mat-form-field-wrapper {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-.row ::ng-deep .mat-mdc-text-field-wrapper {
-  height: 48px;
-}
-
-.row ::ng-deep .mat-mdc-form-field-infix {
-  min-height: 48px;
-  padding: 16px 0;
 }
 
 .remove-btn {
@@ -149,7 +125,8 @@
     flex-wrap: wrap;
   }
 
-  .row mat-form-field {
+  .row app-custom-input,
+  .row app-custom-select {
     flex: 1 1 100%;
     max-width: 100%;
   }

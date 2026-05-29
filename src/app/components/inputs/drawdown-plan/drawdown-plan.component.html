@@ -10,41 +10,20 @@
   <div formArrayName="lumpSums" class="card-list">
     @for (row of lumpSums.controls; track row; let i = $index) {
       <div class="row" [formGroupName]="i">
-        <mat-form-field appearance="outline" class="field-label"><mat-label>Label</mat-label><input matInput formControlName="label" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-amount"><mat-label>Amount</mat-label><input matInput class="num-input" type="number" formControlName="amount" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-source">
-          <mat-label>Source</mat-label>
-          <mat-select formControlName="fromSource">
-            <mat-option value="any">Any (largest first)</mat-option>
-            @for (source of sourceOptions(); track source.id) {
-              <mat-option [value]="source.id">{{ source.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="field-source">
-          <mat-label>LISA use</mat-label>
-          <mat-select formControlName="lisaUseForFirstHome">
-            <mat-option [value]="false">Standard withdrawal</mat-option>
-            <mat-option [value]="true">Qualifying first home purchase</mat-option>
-          </mat-select>
-        </mat-form-field>
+        <app-custom-input class="field-label" label="Label" formControlName="label"></app-custom-input>
+        <app-custom-input
+          class="field-age"
+          label="Age (Me)"
+          type="number"
+          formControlName="age"
+        ></app-custom-input>
+        <app-custom-input class="field-amount" label="Amount" type="number" formControlName="amount" prefix="£"></app-custom-input>
+          <app-custom-select class="field-source" label="Source" formControlName="fromSource" [options]="lumpSumSourceOptions()"></app-custom-select>
+        <app-custom-select class="field-source" label="LISA use" formControlName="lisaUseForFirstHome" [options]="lisaUseOptions"></app-custom-select>
         @if (row.get('lisaUseForFirstHome')?.value) {
-          <mat-form-field appearance="outline" class="field-source">
-            <mat-label>First-time buyer</mat-label>
-            <mat-select formControlName="lisaFirstTimeBuyer">
-              <mat-option [value]="true">Yes</mat-option>
-              <mat-option [value]="false">No</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="field-amount">
-            <mat-label>Property price</mat-label>
-            <input matInput class="num-input" type="number" formControlName="lisaPropertyPrice" />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="field-age">
-            <mat-label>LISA months open</mat-label>
-            <input matInput class="num-input" type="number" formControlName="lisaMonthsOpen" />
-          </mat-form-field>
+          <app-custom-select class="field-source" label="First-time buyer" formControlName="lisaFirstTimeBuyer" [options]="yesNoOptions"></app-custom-select>
+          <app-custom-input class="field-amount" label="Property price" type="number" formControlName="lisaPropertyPrice" prefix="£"></app-custom-input>
+          <app-custom-input class="field-age" label="LISA months open" type="number" formControlName="lisaMonthsOpen"></app-custom-input>
         }
         <button type="button" class="remove-btn" (click)="remove(lumpSums, i)">&times;</button>
       </div>
@@ -60,18 +39,10 @@
   <div formArrayName="futureContributions" class="card-list">
     @for (row of futureContributions.controls; track row; let i = $index) {
       <div class="row" [formGroupName]="i">
-        <mat-form-field appearance="outline" class="field-label"><mat-label>Label</mat-label><input matInput formControlName="label" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-amount"><mat-label>Amount</mat-label><input matInput class="num-input" type="number" formControlName="amount" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-source">
-          <mat-label>To source</mat-label>
-          <mat-select formControlName="toSource">
-            <mat-option value="any">Any (largest eligible)</mat-option>
-            @for (source of sourceOptions(); track source.id) {
-              <mat-option [value]="source.id">{{ source.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-custom-input class="field-label" label="Label" formControlName="label"></app-custom-input>
+        <app-custom-input class="field-age" label="Age (Me)" type="number" formControlName="age"></app-custom-input>
+        <app-custom-input class="field-amount" label="Amount" type="number" formControlName="amount" prefix="£"></app-custom-input>
+          <app-custom-select class="field-source" label="To source" formControlName="toSource" [options]="futureContributionTargetOptions()"></app-custom-select>
         <button type="button" class="remove-btn" (click)="remove(futureContributions, i)">&times;</button>
       </div>
     }
@@ -86,17 +57,9 @@
   <div formArrayName="drawdownSchedule" class="card-list">
     @for (row of drawdownSchedule.controls; track row; let i = $index) {
       <div class="row" [formGroupName]="i">
-        <mat-form-field appearance="outline" class="field-age"><mat-label>Age (Me)</mat-label><input matInput class="num-input" type="number" formControlName="age" (change)="sortAllByAge()" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-amount-wide"><mat-label>Annual Amount (today)</mat-label><input matInput class="num-input" type="number" formControlName="annualAmount" /></mat-form-field>
-        <mat-form-field appearance="outline" class="field-source-wide">
-          <mat-label>Source</mat-label>
-          <mat-select formControlName="fromSource">
-            <mat-option value="proportional">Proportional across eligible pots</mat-option>
-            @for (source of sourceOptions(); track source.id) {
-              <mat-option [value]="source.id">{{ source.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-custom-input class="field-age" label="Age (Me)" type="number" formControlName="age"></app-custom-input>
+        <app-custom-input class="field-amount-wide" label="Annual Amount (today)" type="number" formControlName="annualAmount" prefix="£"></app-custom-input>
+          <app-custom-select class="field-source-wide" label="Source" formControlName="fromSource" [options]="drawdownSourceOptions()"></app-custom-select>
         <button type="button" class="remove-btn" (click)="remove(drawdownSchedule, i)">&times;</button>
       </div>
     }

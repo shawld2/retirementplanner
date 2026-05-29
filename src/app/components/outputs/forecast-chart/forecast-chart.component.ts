@@ -55,7 +55,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       areaStyle: { opacity: 0.6 },
-      data: rows.map((r) => Number((r.potBalances[potId] ?? 0).toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.potBalances[potId]))),
     }));
 
     const drawdownSeries = {
@@ -65,7 +65,7 @@ export class ForecastChartComponent {
       symbol: 'none',
       yAxisIndex: 0,
       lineStyle: { width: 2, type: 'solid', color: '#1f2937' },
-      data: rows.map((r) => Number(r.drawdownRequired.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.drawdownRequired))),
       markLine: {
         symbol: ['none', 'none'],
         lineStyle: { type: 'dashed', width: 1.5 },
@@ -79,7 +79,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, color: '#0f766e' },
-      data: rows.map((r) => Number(r.drawdownTaken.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.drawdownTaken))),
     };
 
     const lumpSumsSeries = {
@@ -89,7 +89,7 @@ export class ForecastChartComponent {
       symbol: 'circle',
       symbolSize: 5,
       lineStyle: { width: 2, color: '#ea580c' },
-      data: rows.map((r) => Number(r.lumpSumsTaken.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.lumpSumsTaken))),
     };
 
     const taxableSeries = {
@@ -98,7 +98,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, type: 'dashed', color: '#b91c1c' },
-      data: rows.map((r) => Number(r.taxableWithdrawals.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.taxableWithdrawals))),
     };
 
     const rentalIncomeSeries = {
@@ -107,7 +107,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, type: 'dashed', color: '#7c3aed' },
-      data: rows.map((r) => Number(r.rentalIncome.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.rentalIncome))),
     };
 
     const propertyValueSeries = {
@@ -116,7 +116,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, color: '#be123c' },
-      data: rows.map((r) => Number(r.totalPropertyValue.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.totalPropertyValue))),
     };
 
     const mortgageRemainingSeries = {
@@ -125,7 +125,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, type: 'dotted', color: '#0369a1' },
-      data: rows.map((r) => Number(r.totalMortgageRemaining.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.totalMortgageRemaining))),
     };
 
     const incomeTaxSeries = {
@@ -134,7 +134,7 @@ export class ForecastChartComponent {
       smooth: true,
       symbol: 'none',
       lineStyle: { width: 2, type: 'dotted', color: '#92400e' },
-      data: rows.map((r) => Number(r.incomeTax.toFixed(0))),
+      data: rows.map((r) => Math.round(this.toFiniteNumber(r.incomeTax))),
     };
 
     const potSeriesNames = new Set(areaSeries.map((s) => s.name));
@@ -156,7 +156,10 @@ export class ForecastChartComponent {
             return '';
           }
 
-          const totalPots = Object.values(row.potBalances).reduce((sum, value) => sum + value, 0);
+          const totalPots = Object.values(row.potBalances).reduce(
+            (sum, value) => sum + this.toFiniteNumber(value),
+            0,
+          );
           const lines: string[] = [];
           lines.push(`<strong>${row.year} / Age ${row.meAge}</strong>`);
           lines.push(`Total Pots: <strong>${this.formatCurrency(totalPots)}</strong>`);
@@ -199,7 +202,7 @@ export class ForecastChartComponent {
             if (!potSeriesNames.has(point.seriesName)) {
               continue;
             }
-            lines.push(`${point.marker}${point.seriesName}: ${this.formatCurrency(Number(point.value))}`);
+            lines.push(`${point.marker}${point.seriesName}: ${this.formatCurrency(point.value)}`);
           }
 
           return lines.join('<br/>');
@@ -234,12 +237,17 @@ export class ForecastChartComponent {
     };
   });
 
-  private formatCurrency(value: number): string {
-    return `£${Math.round(value).toLocaleString()}`;
+  private formatCurrency(value: unknown): string {
+    return `£${Math.round(this.toFiniteNumber(value)).toLocaleString()}`;
   }
 
-  private formatPercent(value: number): string {
-    return `${(value * 100).toFixed(1)}%`;
+  private formatPercent(value: unknown): string {
+    return `${(this.toFiniteNumber(value) * 100).toFixed(1)}%`;
+  }
+
+  private toFiniteNumber(value: unknown): number {
+    const parsed = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
   }
 
   private markerLines(rows: ForecastYear[]): Array<{ xAxis: number; name: string; lineStyle?: unknown }> {
