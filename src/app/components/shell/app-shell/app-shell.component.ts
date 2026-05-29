@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, computed, inject } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -18,7 +18,9 @@ import {
   DrawdownYear,
   ForecastInputs,
   FutureContributionEvent,
+  IsaPot,
   LumpSumEvent,
+  PensionPot,
   PropertyAsset,
   ProjectionSettings,
   ReturnScenario,
@@ -102,7 +104,7 @@ export class AppShellComponent implements OnDestroy {
       monteCarloVolatilityPercent: this.fb.control(12, [Validators.required, Validators.min(0), Validators.max(80)]),
       monteCarloUseSeed: this.fb.control(false),
       monteCarloSeed: this.fb.control(12345, [Validators.min(1)]),
-      monteCarloUseWorker: this.fb.control(false),
+      monteCarloUseWorker: this.fb.control(true),
       taxBands: this.fb.array(this.defaultTaxBands().map((b) => this.createTaxBandGroup(b))),
     }),
     drawdown: this.fb.group({
@@ -121,6 +123,7 @@ export class AppShellComponent implements OnDestroy {
   readonly forecastRows = computed(() => this.forecastService.forecast());
   readonly monteCarloResult = computed(() => this.forecastService.monteCarlo());
   readonly isMonteCarloCalculating = computed(() => this.forecastService.monteCarloPending());
+  readonly sourceOptions = signal<Array<{ id: string; label: string }>>([]);
 
   readonly summary = computed(() => {
     const rows = this.forecastRows();
@@ -139,9 +142,11 @@ export class AppShellComponent implements OnDestroy {
 
   constructor() {
     this.loadFromLocalStorage();
+    this.refreshSourceOptions();
 
     this.sub.add(
       this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+        this.refreshSourceOptions();
         this.persistInputs();
         this.recalculate();
       }),
@@ -174,7 +179,7 @@ export class AppShellComponent implements OnDestroy {
     return priority === 'isa-first' ? 'ISA First' : 'Pension First';
   }
 
-  get sourceOptions(): Array<{ id: string; label: string }> {
+  private buildSourceOptions(): Array<{ id: string; label: string }> {
     const mePensions = (this.portfolioGroup.get('mePensions') as FormArray<FormGroup>).getRawValue();
     const meIsas = (this.portfolioGroup.get('meIsas') as FormArray<FormGroup>).getRawValue();
     const partnerPensions = (this.portfolioGroup.get('partnerPensions') as FormArray<FormGroup>).getRawValue();
@@ -194,6 +199,10 @@ export class AppShellComponent implements OnDestroy {
           label: `${baseLabel} (${accountType})`,
         };
       });
+  }
+
+  private refreshSourceOptions(): void {
+    this.sourceOptions.set(this.buildSourceOptions());
   }
 
   recalculate(): void {
@@ -334,21 +343,46 @@ export class AppShellComponent implements OnDestroy {
       }))
       .sort((a, b) => a.age - b.age);
 
+    const normalizePension = (pension: PensionPot): PensionPot => ({
+      ...pension,
+      id: String(pension.id),
+      label: String(pension.label ?? ''),
+      type: pension.type === 'DB' ? 'DB' : 'DC',
+      currentValue: Number(pension.currentValue ?? 0),
+      annualContribution: Number(pension.annualContribution ?? 0),
+      employerContribution: Number(pension.employerContribution ?? 0),
+      dbAnnualPension: Number(pension.dbAnnualPension ?? 0),
+      dbLumpSum: Number(pension.dbLumpSum ?? 0),
+      dbPensionAge: Number(pension.dbPensionAge ?? 0),
+      taxFreePercentage: Number(pension.taxFreePercentage ?? 0),
+      chargesPercent: Number(pension.chargesPercent ?? 0),
+    });
+
+    const normalizeIsa = (isa: IsaPot): IsaPot => ({
+      ...isa,
+      id: String(isa.id),
+      label: String(isa.label ?? ''),
+      isaType: isa.isaType === 'LISA' ? 'LISA' : (isa.isaType === 'CASH_ISA' ? 'CASH_ISA' : 'ISA'),
+      currentValue: Number(isa.currentValue ?? 0),
+      annualContribution: Number(isa.annualContribution ?? 0),
+      chargesPercent: Number(isa.chargesPercent ?? 0),
+    });
+
     const inflationPercent = Number(settings.inflationPercent ?? 2.5);
 
     return {
       me: {
         currentAge: Number(personal.meCurrentAge),
         retirementAge: Number(personal.meRetirementAge),
-        pensions: (portfolio.mePensions ?? []) as never[],
-        isas: (portfolio.meIsas ?? []) as never[],
+        pensions: ((portfolio.mePensions ?? []) as PensionPot[]).map(normalizePension),
+        isas: ((portfolio.meIsas ?? []) as IsaPot[]).map(normalizeIsa),
       },
       partner: personal.includePartner
         ? {
             currentAge: Number(personal.partnerCurrentAge),
             retirementAge: Number(personal.partnerRetirementAge),
-            pensions: (portfolio.partnerPensions ?? []) as never[],
-            isas: (portfolio.partnerIsas ?? []) as never[],
+            pensions: ((portfolio.partnerPensions ?? []) as PensionPot[]).map(normalizePension),
+            isas: ((portfolio.partnerIsas ?? []) as IsaPot[]).map(normalizeIsa),
           }
         : undefined,
       properties: ((portfolio.properties ?? []) as PropertyAsset[]).map((p) => ({
@@ -401,7 +435,7 @@ export class AppShellComponent implements OnDestroy {
         monteCarloSeed: settings.monteCarloUseSeed
           ? Math.max(1, Math.floor(Number(settings.monteCarloSeed ?? 12345)))
           : undefined,
-        monteCarloUseWorker: !!settings.monteCarloUseWorker,
+        monteCarloUseWorker: settings.monteCarloUseWorker ?? true,
       } as ProjectionSettings,
       lumpSums,
       futureContributions,
@@ -551,6 +585,8 @@ export class AppShellComponent implements OnDestroy {
           fromSource: this.fb.control(v.fromSource ?? 'proportional'),
         }),
     );
+
+    this.refreshSourceOptions();
   }
 
   private replaceArray(arr: FormArray, values: any[], mapFn: (value: any) => FormGroup): void {

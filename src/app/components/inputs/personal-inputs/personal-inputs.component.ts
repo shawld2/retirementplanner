@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CustomInputComponent } from '../../shared/custom-input/custom-input.component';
 
 @Component({
   selector: 'app-personal-inputs',
@@ -11,9 +10,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatSlideToggleModule,
+    CustomInputComponent,
   ],
   templateUrl: './personal-inputs.component.html',
   styleUrl: './personal-inputs.component.scss',

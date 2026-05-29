@@ -1,18 +1,24 @@
+@use 'styles/variables' as *;
+
 .chart-wrap {
   display: grid;
-  gap: 0.75rem;
+  gap: $spacing-4;
 }
 
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: $spacing-4;
   align-items: center;
+  padding: $padding-md;
+  background: $cream-50;
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
 }
 
 .control-group {
   display: flex;
-  gap: 0.5rem;
+  gap: $spacing-3;
   align-items: center;
 }
 
@@ -23,11 +29,18 @@
 .chart {
   height: min(70vh, 560px);
   width: 100%;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: $bg-primary;
+  border-radius: $radius-xl;
+  border: 2px solid $border-light;
+  padding: $padding-md;
 }
 
 :host ::ng-deep .forecast-tooltip {
   z-index: 5000 !important;
+  background: $bg-primary !important;
+  border: 2px solid $border-input !important;
+  border-radius: $radius-md !important;
+  box-shadow: $shadow-lg !important;
+  padding: $padding-sm !important;
+  font-family: $font-family-base !important;
 }

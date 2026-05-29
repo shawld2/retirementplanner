@@ -3,8 +3,8 @@
 @use 'styles/layout' as *;
 @use 'styles/components' as *;
 
-// Material theme
-@import '@angular/material/prebuilt-themes/azure-blue.css';
+// Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 * {
 	box-sizing: border-box;
@@ -18,6 +18,8 @@ body {
 	color: $text-primary;
 	background: $bg-secondary;
 	line-height: $line-height-normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 // Ensure consistent typography across Material components
@@ -41,29 +43,21 @@ h6,
 .mat-mdc-form-field-input-control,
 .mat-mdc-select-value,
 .mat-mdc-select-min-line,
-.mat-step-text-label {
+.mat-step-text-label,
+.mat-mdc-checkbox label,
+.mat-mdc-slide-toggle label,
+.mat-button-toggle-label-content {
 	font-family: $font-family-base !important;
 }
 
-// Material component customization
-.mat-mdc-button {
-	&.mat-primary {
-		background-color: $primary-main !important;
-	}
-}
-
-.mat-mdc-outlined-button {
-	border-color: $primary-main !important;
-	color: $primary-main !important;
-
-	&:hover {
-		background-color: $primary-lighter;
-	}
-}
+// ============================================
+// Material Form Field - Professional Thick Borders
+// ============================================
 
 .mat-mdc-form-field {
 	.mat-mdc-form-field-label {
 		color: $text-secondary !important;
+		font-weight: $font-weight-medium !important;
 	}
 
 	&.mat-focused {
@@ -73,23 +67,298 @@ h6,
 	}
 }
 
-.mdc-text-field--filled {
-	background-color: $bg-primary !important;
+// Outlined appearance - thick borders
+.mat-mdc-form-field.mat-form-field-appearance-outline {
+	.mdc-notched-outline__leading,
+	.mdc-notched-outline__notch,
+	.mdc-notched-outline__trailing {
+		border-color: $border-input !important;
+		border-width: $input-border-width !important;
+	}
 
 	&:hover {
-		background-color: $bg-tertiary !important;
+		.mdc-notched-outline__leading,
+		.mdc-notched-outline__notch,
+		.mdc-notched-outline__trailing {
+			border-color: $primary-main !important;
+		}
 	}
-}
 
-.mat-mdc-tab {
-	&.mat-mdc-tab-active {
-		.mat-mdc-tab-labels-content {
-			color: $primary-main !important;
+	&.mat-focused {
+		.mdc-notched-outline__leading,
+		.mdc-notched-outline__notch,
+		.mdc-notched-outline__trailing {
+			border-color: $primary-main !important;
+			border-width: $input-border-width !important;
 		}
 	}
 }
 
+.mdc-text-field--outlined {
+	background-color: $bg-primary !important;
+	border-radius: $radius-md !important;
+	
+	.mdc-notched-outline {
+		.mdc-notched-outline__leading {
+			border-top-left-radius: $radius-md !important;
+			border-bottom-left-radius: $radius-md !important;
+		}
+		
+		.mdc-notched-outline__trailing {
+			border-top-right-radius: $radius-md !important;
+			border-bottom-right-radius: $radius-md !important;
+		}
+	}
+}
+
+// Input text styling
+.mat-mdc-form-field-input-control {
+	font-size: $font-base !important;
+	font-weight: $font-weight-medium !important;
+	color: $text-primary !important;
+}
+
+// Filled appearance override
+.mdc-text-field--filled {
+	background-color: $bg-primary !important;
+	border: $input-border-width solid $border-input !important;
+	border-radius: $radius-md !important;
+
+	&:hover {
+		background-color: $bg-primary !important;
+		border-color: $primary-main !important;
+	}
+	
+	&.mdc-text-field--focused {
+		border-color: $primary-main !important;
+	}
+	
+	.mdc-line-ripple {
+		display: none !important;
+	}
+}
+
+// ============================================
+// Material Buttons - Professional Styling
+// ============================================
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-unelevated-button {
+	font-weight: $font-weight-semibold !important;
+	letter-spacing: $letter-spacing-wide !important;
+	border-radius: $radius-md !important;
+	text-transform: none !important;
+	min-height: 44px !important;
+	padding: 0 20px !important;
+
+	&.mat-primary {
+		background-color: $primary-main !important;
+		color: $text-on-primary !important;
+		
+		&:hover {
+			background-color: $primary-dark !important;
+		}
+	}
+}
+
+.mat-mdc-outlined-button {
+	border: $input-border-width solid $primary-main !important;
+	color: $primary-main !important;
+	font-weight: $font-weight-semibold !important;
+	border-radius: $radius-md !important;
+	min-height: 44px !important;
+
+	&:hover {
+		background-color: $primary-lighter !important;
+	}
+}
+
+// Stroked button
+.mat-mdc-stroked-button,
+[mat-stroked-button] {
+	border: $input-border-width solid $border-input !important;
+	color: $text-primary !important;
+	font-weight: $font-weight-semibold !important;
+	border-radius: $radius-md !important;
+	min-height: 44px !important;
+	background: $bg-primary !important;
+
+	&:hover {
+		background-color: $bg-tertiary !important;
+		border-color: $primary-main !important;
+	}
+}
+
+// ============================================
+// Material Tabs
+// ============================================
+
+.mat-mdc-tab-group {
+	.mat-mdc-tab-header {
+		border-bottom: 1px solid $border-light;
+	}
+	
+	.mat-mdc-tab {
+		font-weight: $font-weight-semibold !important;
+		letter-spacing: $letter-spacing-normal !important;
+		min-width: 120px;
+		
+		&.mdc-tab--active {
+			.mdc-tab__text-label {
+				color: $primary-main !important;
+			}
+		}
+		
+		.mdc-tab__text-label {
+			color: $text-secondary;
+		}
+	}
+	
+	.mdc-tab-indicator__content--underline {
+		border-color: $primary-main !important;
+		border-width: 3px !important;
+	}
+}
+
+// ============================================
+// Material Stepper
+// ============================================
+
 .mat-stepper-horizontal,
 .mat-stepper-vertical {
 	background: transparent;
+}
+
+// ============================================
+// Material Slide Toggle
+// ============================================
+
+.mat-mdc-slide-toggle {
+	.mdc-switch__track {
+		border-radius: $radius-full;
+	}
+	
+	&.mat-mdc-slide-toggle-checked {
+		.mdc-switch__track {
+			background-color: $accent-teal !important;
+		}
+	}
+	
+	.mdc-label {
+		font-weight: $font-weight-medium;
+		color: $text-primary;
+	}
+}
+
+// ============================================
+// Material Checkbox
+// ============================================
+
+.mat-mdc-checkbox {
+	.mdc-checkbox__background {
+		border-width: $input-border-width !important;
+		border-color: $border-input !important;
+		border-radius: $radius-sm !important;
+	}
+	
+	&.mat-mdc-checkbox-checked {
+		.mdc-checkbox__background {
+			background-color: $primary-main !important;
+			border-color: $primary-main !important;
+		}
+	}
+	
+	.mdc-label {
+		font-weight: $font-weight-medium;
+		color: $text-primary;
+	}
+}
+
+// ============================================
+// Material Slider
+// ============================================
+
+.mat-mdc-slider {
+	.mdc-slider__track--active_fill {
+		background-color: $primary-main !important;
+		border-color: $primary-main !important;
+	}
+	
+	.mdc-slider__track--inactive {
+		background-color: $border-default !important;
+	}
+	
+	.mdc-slider__thumb-knob {
+		background-color: $primary-main !important;
+		border-color: $primary-main !important;
+	}
+}
+
+// ============================================
+// Material Button Toggle
+// ============================================
+
+.mat-button-toggle-group {
+	border: $input-border-width solid $border-input !important;
+	border-radius: $radius-md !important;
+	overflow: hidden;
+	
+	.mat-button-toggle {
+		border: none !important;
+		
+		.mat-button-toggle-label-content {
+			font-weight: $font-weight-semibold;
+			padding: 0 20px;
+			line-height: 40px;
+		}
+		
+		&.mat-button-toggle-checked {
+			background-color: $primary-main !important;
+			color: $text-on-primary !important;
+		}
+	}
+	
+	.mat-button-toggle + .mat-button-toggle {
+		border-left: $input-border-width solid $border-input !important;
+	}
+}
+
+// ============================================
+// Material Expansion Panel
+// ============================================
+
+.mat-expansion-panel {
+	border: 1px solid $border-light !important;
+	border-radius: $radius-lg !important;
+	box-shadow: $shadow-sm !important;
+	margin-bottom: $spacing-4 !important;
+	
+	&:not(.mat-expanded) {
+		.mat-expansion-panel-header:hover {
+			background: $bg-tertiary !important;
+		}
+	}
+	
+	.mat-expansion-panel-header {
+		font-weight: $font-weight-semibold;
+		
+		.mat-expansion-panel-header-title {
+			color: $text-primary;
+			font-weight: $font-weight-semibold;
+		}
+	}
+}
+
+// ============================================
+// Material Select
+// ============================================
+
+.mat-mdc-select {
+	font-weight: $font-weight-medium !important;
+	
+	.mat-mdc-select-trigger {
+		font-weight: $font-weight-medium;
+	}
 }

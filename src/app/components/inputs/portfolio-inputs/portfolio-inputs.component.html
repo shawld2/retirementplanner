@@ -19,15 +19,15 @@
           @if (pot.value.type === 'DC') {
             <div class="pot-card pot-card-dc" [formGroupName]="i">
               <div class="grid">
-                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Employer contribution</mat-label><input matInput type="number" formControlName="employerContribution" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Tax-free %</mat-label><input matInput type="number" formControlName="taxFreePercentage" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <app-custom-input label="Name" formControlName="label"></app-custom-input>
+                <app-custom-input label="Current value" type="number" formControlName="currentValue" prefix="£"></app-custom-input>
+                <app-custom-input label="Annual contribution" type="number" formControlName="annualContribution" prefix="£"></app-custom-input>
+                <app-custom-input label="Employer contribution" type="number" formControlName="employerContribution" prefix="£"></app-custom-input>
+                <app-custom-input label="Tax-free %" type="number" formControlName="taxFreePercentage" suffix="%"></app-custom-input>
+                <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
                 <div class="remove-cell">
-                  <button mat-icon-button type="button" (click)="remove(mePensions, i)">
-                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  <button class="remove-btn" type="button" (click)="remove(mePensions, i)">
+                    <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
               </div>
@@ -42,14 +42,14 @@
           @if (pot.value.type === 'DB') {
             <div class="pot-card pot-card-db" [formGroupName]="i">
               <div class="grid">
-                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Pension start age</mat-label><input matInput type="number" formControlName="dbPensionAge" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Annual pension at start age</mat-label><input matInput type="number" formControlName="dbAnnualPension" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Lump sum at start age</mat-label><input matInput type="number" formControlName="dbLumpSum" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <app-custom-input label="Name" formControlName="label"></app-custom-input>
+                <app-custom-input label="Pension start age" type="number" formControlName="dbPensionAge"></app-custom-input>
+                <app-custom-input label="Annual pension at start age" type="number" formControlName="dbAnnualPension" prefix="£"></app-custom-input>
+                <app-custom-input label="Lump sum at start age" type="number" formControlName="dbLumpSum" prefix="£"></app-custom-input>
+                <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
                 <div class="remove-cell">
-                  <button mat-icon-button type="button" (click)="remove(mePensions, i)">
-                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  <button class="remove-btn" type="button" (click)="remove(mePensions, i)">
+                    <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
               </div>
@@ -64,21 +64,18 @@
         @for (isa of meIsas.controls; track isa; let i = $index) {
           <div class="pot-card pot-card-isa" [formGroupName]="i">
             <div class="grid">
-              <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Account type</mat-label>
-                <mat-select formControlName="isaType">
-                  <mat-option value="ISA">Stocks ISA</mat-option>
-                  <mat-option value="LISA">LISA</mat-option>
-                  <mat-option value="CASH_ISA">Cash ISA</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+              <app-custom-input label="Name" formControlName="label"></app-custom-input>
+              <app-custom-select
+                label="Account type"
+                formControlName="isaType"
+                [options]="isaTypeOptions"
+              ></app-custom-select>
+              <app-custom-input label="Current value" type="number" formControlName="currentValue" prefix="£"></app-custom-input>
+              <app-custom-input label="Annual contribution" type="number" formControlName="annualContribution" prefix="£"></app-custom-input>
+              <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
               <div class="remove-cell">
-                <button mat-icon-button type="button" (click)="remove(meIsas, i)">
-                  <span class="remove-glyph" aria-hidden="true">&times;</span>
+                <button class="remove-btn" type="button" (click)="remove(meIsas, i)">
+                  <span aria-hidden="true">&times;</span>
                 </button>
               </div>
             </div>
@@ -105,15 +102,15 @@
             @if (pot.value.type === 'DC') {
               <div class="pot-card pot-card-dc" [formGroupName]="i">
                 <div class="grid">
-                  <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Employer contribution</mat-label><input matInput type="number" formControlName="employerContribution" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Tax-free %</mat-label><input matInput type="number" formControlName="taxFreePercentage" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                  <app-custom-input label="Name" formControlName="label"></app-custom-input>
+                  <app-custom-input label="Current value" type="number" formControlName="currentValue" prefix="£"></app-custom-input>
+                  <app-custom-input label="Annual contribution" type="number" formControlName="annualContribution" prefix="£"></app-custom-input>
+                  <app-custom-input label="Employer contribution" type="number" formControlName="employerContribution" prefix="£"></app-custom-input>
+                  <app-custom-input label="Tax-free %" type="number" formControlName="taxFreePercentage" suffix="%"></app-custom-input>
+                  <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
                   <div class="remove-cell">
-                    <button mat-icon-button type="button" (click)="remove(partnerPensions, i)">
-                      <span class="remove-glyph" aria-hidden="true">&times;</span>
+                    <button class="remove-btn" type="button" (click)="remove(partnerPensions, i)">
+                      <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                 </div>
@@ -128,14 +125,14 @@
             @if (pot.value.type === 'DB') {
               <div class="pot-card pot-card-db" [formGroupName]="i">
                 <div class="grid">
-                  <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Pension start age</mat-label><input matInput type="number" formControlName="dbPensionAge" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Annual pension at start age</mat-label><input matInput type="number" formControlName="dbAnnualPension" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Lump sum at start age</mat-label><input matInput type="number" formControlName="dbLumpSum" /></mat-form-field>
-                  <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                  <app-custom-input label="Name" formControlName="label"></app-custom-input>
+                  <app-custom-input label="Pension start age" type="number" formControlName="dbPensionAge"></app-custom-input>
+                  <app-custom-input label="Annual pension at start age" type="number" formControlName="dbAnnualPension" prefix="£"></app-custom-input>
+                  <app-custom-input label="Lump sum at start age" type="number" formControlName="dbLumpSum" prefix="£"></app-custom-input>
+                  <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
                   <div class="remove-cell">
-                    <button mat-icon-button type="button" (click)="remove(partnerPensions, i)">
-                      <span class="remove-glyph" aria-hidden="true">&times;</span>
+                    <button class="remove-btn" type="button" (click)="remove(partnerPensions, i)">
+                      <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                 </div>
@@ -150,21 +147,18 @@
           @for (isa of partnerIsas.controls; track isa; let i = $index) {
             <div class="pot-card pot-card-isa" [formGroupName]="i">
               <div class="grid">
-                <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Account type</mat-label>
-                  <mat-select formControlName="isaType">
-                    <mat-option value="ISA">Stocks ISA</mat-option>
-                    <mat-option value="LISA">LISA</mat-option>
-                    <mat-option value="CASH_ISA">Cash ISA</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Annual contribution</mat-label><input matInput type="number" formControlName="annualContribution" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Charges %</mat-label><input matInput type="number" formControlName="chargesPercent" /></mat-form-field>
+                <app-custom-input label="Name" formControlName="label"></app-custom-input>
+                <app-custom-select
+                  label="Account type"
+                  formControlName="isaType"
+                  [options]="isaTypeOptions"
+                ></app-custom-select>
+                <app-custom-input label="Current value" type="number" formControlName="currentValue" prefix="£"></app-custom-input>
+                <app-custom-input label="Annual contribution" type="number" formControlName="annualContribution" prefix="£"></app-custom-input>
+                <app-custom-input label="Charges %" type="number" formControlName="chargesPercent" suffix="%"></app-custom-input>
                 <div class="remove-cell">
-                  <button mat-icon-button type="button" (click)="remove(partnerIsas, i)">
-                    <span class="remove-glyph" aria-hidden="true">&times;</span>
+                  <button class="remove-btn" type="button" (click)="remove(partnerIsas, i)">
+                    <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
               </div>
@@ -187,31 +181,28 @@
         @for (property of properties.controls; track property; let i = $index) {
           <div class="pot-card" [formGroupName]="i">
             <div class="grid">
-              <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput formControlName="label" /></mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Property type</mat-label>
-                <mat-select formControlName="propertyType" (selectionChange)="onPropertyTypeChanged(property, $event.value)">
-                  <mat-option value="residential">Residential</mat-option>
-                  <mat-option value="buy-to-let">Buy to let</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Current value</mat-label><input matInput type="number" formControlName="currentValue" /></mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Mortgage type</mat-label>
-                <mat-select formControlName="mortgageType">
-                  <mat-option value="repayment">Repayment</mat-option>
-                  <mat-option value="interest-only">Interest only</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Mortgage outstanding</mat-label><input matInput type="number" formControlName="mortgageOutstanding" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Mortgage rate %</mat-label><input matInput type="number" formControlName="mortgageRatePercent" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Mortgage years remaining</mat-label><input matInput type="number" formControlName="mortgageYearsRemaining" /></mat-form-field>
+              <app-custom-input label="Name" formControlName="label"></app-custom-input>
+              <app-custom-select
+                label="Property type"
+                formControlName="propertyType"
+                [options]="propertyTypeOptions"
+                (ngModelChange)="onPropertyTypeChanged(property, $event)"
+              ></app-custom-select>
+              <app-custom-input label="Current value" type="number" formControlName="currentValue" prefix="£"></app-custom-input>
+              <app-custom-select
+                label="Mortgage type"
+                formControlName="mortgageType"
+                [options]="mortgageTypeOptions"
+              ></app-custom-select>
+              <app-custom-input label="Mortgage outstanding" type="number" formControlName="mortgageOutstanding" prefix="£"></app-custom-input>
+              <app-custom-input label="Mortgage rate %" type="number" formControlName="mortgageRatePercent" suffix="%"></app-custom-input>
+              <app-custom-input label="Mortgage years remaining" type="number" formControlName="mortgageYearsRemaining"></app-custom-input>
               @if (property.get('propertyType')?.value === 'buy-to-let') {
-                <mat-form-field appearance="outline"><mat-label>Annual rental income</mat-label><input matInput type="number" formControlName="annualRentalIncome" /></mat-form-field>
+                <app-custom-input label="Annual rental income" type="number" formControlName="annualRentalIncome" prefix="£"></app-custom-input>
               }
               <div class="remove-cell">
-                <button mat-icon-button type="button" (click)="remove(properties, i)">
-                  <span class="remove-glyph" aria-hidden="true">&times;</span>
+                <button class="remove-btn" type="button" (click)="remove(properties, i)">
+                  <span aria-hidden="true">&times;</span>
                 </button>
               </div>
             </div>

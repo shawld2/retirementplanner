@@ -7,7 +7,7 @@
 
 .card {
   @include card-base;
-  padding: $padding-lg;
+  padding: $padding-xl;
   margin-bottom: $spacing-6;
 
   &.card-elevated {
@@ -32,31 +32,33 @@
   display: flex;
   align-items: center;
   gap: $gap-md;
-  margin-bottom: $spacing-4;
-  padding-bottom: $spacing-4;
-  border-bottom: 1px solid $border-light;
+  margin-bottom: $spacing-5;
+  padding-bottom: $spacing-5;
+  border-bottom: 2px solid $border-light;
 
   .card-icon {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $primary-lighter;
-    border-radius: $radius-md;
+    border: 2px solid $border-light;
+    border-radius: $radius-lg;
     color: $primary-main;
-    font-size: $font-lg;
+    font-size: $font-xl;
   }
 
   .card-title {
     margin: 0;
-    font-size: $font-lg;
-    font-weight: $font-weight-semibold;
+    font-size: $font-xl;
+    font-weight: $font-weight-bold;
     color: $text-primary;
+    letter-spacing: $letter-spacing-tight;
   }
 
   .card-subtitle {
-    margin: 0;
+    margin: $spacing-1 0 0 0;
     font-size: $font-sm;
     color: $text-tertiary;
   }
@@ -72,32 +74,33 @@
   align-items: center;
   justify-content: center;
   gap: $gap-sm;
-  padding: 10px 16px;
+  padding: 12px 20px;
   font-family: $font-family-base;
   font-size: $font-base;
-  font-weight: $font-weight-medium;
-  border: none;
+  font-weight: $font-weight-semibold;
+  border: $input-border-width solid transparent;
   border-radius: $radius-md;
   cursor: pointer;
   @include smooth-transition();
   white-space: nowrap;
+  text-decoration: none;
 
   // Sizes
   &.btn-large {
-    padding: 12px 24px;
+    padding: 14px 28px;
     font-size: $font-lg;
-    min-height: 48px;
+    min-height: 52px;
   }
 
   &.btn-small {
-    padding: 8px 12px;
+    padding: 8px 14px;
     font-size: $font-sm;
-    min-height: 32px;
+    min-height: 36px;
   }
 
   &.btn-icon-only {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     padding: 0;
   }
 
@@ -105,38 +108,36 @@
   &.btn-primary {
     background: $primary-main;
     color: $text-on-primary;
-    box-shadow: $shadow-sm;
+    border-color: $primary-main;
 
     &:hover {
       background: $primary-dark;
-      box-shadow: $shadow-md;
+      border-color: $primary-dark;
       transform: translateY(-1px);
     }
 
     &:active {
       transform: translateY(0);
-      box-shadow: $shadow-xs;
     }
 
     &:disabled {
-      background: $gray-300;
-      color: $gray-500;
+      background: $cream-400;
+      border-color: $cream-400;
+      color: $cream-600;
       cursor: not-allowed;
-      box-shadow: $shadow-none;
       transform: none;
     }
   }
 
   // Secondary Button
   &.btn-secondary {
-    background: transparent;
+    background: $bg-primary;
     color: $primary-main;
-    border: 2px solid $primary-main;
+    border-color: $border-input;
 
     &:hover {
       background: $primary-lighter;
-      border-color: $primary-dark;
-      color: $primary-dark;
+      border-color: $primary-main;
     }
 
     &:active {
@@ -144,8 +145,8 @@
     }
 
     &:disabled {
-      border-color: $gray-300;
-      color: $gray-400;
+      border-color: $cream-400;
+      color: $cream-500;
       cursor: not-allowed;
     }
   }
@@ -154,23 +155,22 @@
   &.btn-success {
     background: $success;
     color: $text-on-primary;
-    box-shadow: $shadow-sm;
+    border-color: $success;
 
     &:hover {
-      background: color.scale($success, $lightness: -5%);
-      box-shadow: $shadow-md;
+      background: color.scale($success, $lightness: -10%);
+      border-color: color.scale($success, $lightness: -10%);
     }
   }
 
   // Danger/Destructive Button
   &.btn-danger {
-    background: transparent;
+    background: $bg-primary;
     color: $error;
-    border: 2px solid $error;
+    border-color: $error;
 
     &:hover {
-      background: rgba($error, 0.1);
-      border-color: color.scale($error, $lightness: -5%);
+      background: rgba($error, 0.08);
     }
   }
 
@@ -178,29 +178,11 @@
   &.btn-ghost {
     background: transparent;
     color: $text-secondary;
-    border: none;
+    border-color: transparent;
 
     &:hover {
       background: $bg-tertiary;
       color: $text-primary;
-    }
-  }
-
-  // Icon Button
-  &.btn-icon {
-    background: transparent;
-    color: $text-secondary;
-    border: none;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $radius-md;
-
-    &:hover {
-      background: $bg-tertiary;
     }
   }
 }
@@ -253,24 +235,27 @@
   align-items: center;
   gap: $gap-sm;
   font-size: $font-sm;
-  font-weight: $font-weight-medium;
+  font-weight: $font-weight-semibold;
   color: $text-primary;
   margin-bottom: $spacing-2;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wider;
 
   .required {
     color: $error;
   }
 
   .info-icon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $primary-lighter;
+    border: 1px solid $border-light;
     border-radius: $radius-full;
-    color: $primary-main;
-    font-size: 12px;
+    color: $text-tertiary;
+    font-size: 11px;
     cursor: help;
   }
 }
@@ -279,7 +264,6 @@
   font-size: $font-xs;
   color: $text-tertiary;
   margin-top: $spacing-2;
-  font-style: italic;
 }
 
 .form-error {
@@ -289,11 +273,7 @@
   display: flex;
   align-items: center;
   gap: $gap-xs;
-
-  &::before {
-    content: '⚠';
-    display: inline-block;
-  }
+  font-weight: $font-weight-medium;
 }
 
 .form-success {
@@ -303,12 +283,7 @@
   display: flex;
   align-items: center;
   gap: $gap-xs;
-
-  &::before {
-    content: '✓';
-    display: inline-block;
-    font-weight: bold;
-  }
+  font-weight: $font-weight-medium;
 }
 
 // ============================================
@@ -316,54 +291,7 @@
 // ============================================
 
 .input-field {
-  width: 100%;
-  padding: 10px 12px;
-  font-family: $font-family-base;
-  font-size: $font-base;
-  line-height: $line-height-normal;
-  color: $text-primary;
-  background: $bg-primary;
-  border: 1px solid $border-default;
-  border-radius: $radius-md;
-  transition: border-color $transition-base, box-shadow $transition-base;
-
-  &::placeholder {
-    color: $text-muted;
-  }
-
-  &:hover {
-    border-color: $border-dark;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: $primary-main;
-    box-shadow: 0 0 0 3px rgba($primary-main, 0.1);
-  }
-
-  &:disabled {
-    background: $bg-tertiary;
-    border-color: $border-light;
-    color: $text-muted;
-    cursor: not-allowed;
-  }
-
-  &.input-error {
-    border-color: $error;
-    background: rgba($error, 0.02);
-
-    &:focus {
-      box-shadow: 0 0 0 3px rgba($error, 0.1);
-    }
-  }
-
-  &.input-success {
-    border-color: $success;
-
-    &:focus {
-      box-shadow: 0 0 0 3px rgba($success, 0.1);
-    }
-  }
+  @include input-base;
 }
 
 // ============================================
@@ -372,13 +300,32 @@
 
 .section {
   margin-bottom: $spacing-8;
-  padding: $padding-lg;
+  padding: $padding-xl;
   background: $bg-primary;
-  border: 1px solid $border-light;
-  border-radius: $radius-lg;
+  border: 2px solid $border-light;
+  border-radius: $radius-xl;
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  h2 {
+    margin: 0 0 $spacing-6 0;
+    font-size: $font-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    letter-spacing: $letter-spacing-tight;
+    padding-bottom: $spacing-4;
+    border-bottom: 2px solid $border-light;
+  }
+
+  h3 {
+    margin: $spacing-6 0 $spacing-4 0;
+    font-size: $font-lg;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
   }
 }
 
@@ -390,15 +337,16 @@
   font-size: $font-2xl;
   font-weight: $font-weight-bold;
   color: $text-primary;
+  letter-spacing: $letter-spacing-tight;
 
   .section-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient($primary-main, $primary-dark);
-    border-radius: $radius-md;
+    background: $primary-main;
+    border-radius: $radius-lg;
     color: $text-on-primary;
     font-size: $font-xl;
   }
@@ -418,25 +366,28 @@
   display: inline-flex;
   align-items: center;
   gap: $gap-xs;
-  padding: 4px 12px;
+  padding: 6px 14px;
   font-size: $font-xs;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-bold;
   border-radius: $radius-full;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
 
   &.badge-primary {
     background: $primary-lighter;
-    color: $primary-dark;
+    color: $primary-main;
+    border: 1px solid $border-light;
   }
 
   &.badge-success {
     background: rgba($success, 0.1);
-    color: color.scale($success, $lightness: -10%);
+    color: $success;
   }
 
   &.badge-warning {
     background: rgba($warning, 0.1);
-    color: color.scale($warning, $lightness: -10%);
+    color: $warning;
   }
 
   &.badge-error {
@@ -452,9 +403,9 @@
 .alert {
   display: flex;
   gap: $gap-md;
-  padding: $padding-md;
-  border-radius: $radius-md;
-  border-left: 4px solid;
+  padding: $padding-lg;
+  border-radius: $radius-lg;
+  border: 2px solid;
   animation: slideIn $transition-base ease-out;
 
   &.alert-info {
@@ -490,18 +441,76 @@
   .alert-content {
     flex: 1;
     font-size: $font-sm;
-    line-height: $line-height-snug;
+    line-height: $line-height-relaxed;
+    font-weight: $font-weight-medium;
   }
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// ============================================
+// Divider
+// ============================================
+
+.divider {
+  height: 2px;
+  background: $border-light;
+  margin: $spacing-6 0;
+  border: none;
+}
+
+// ============================================
+// Stat Card
+// ============================================
+
+.stat-card {
+  padding: $padding-lg;
+  background: $bg-primary;
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
+  
+  .stat-label {
+    display: block;
+    font-size: $font-xs;
+    font-weight: $font-weight-bold;
+    color: $text-tertiary;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wider;
+    margin-bottom: $spacing-2;
+  }
+  
+  .stat-value {
+    display: block;
+    font-size: $font-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    letter-spacing: $letter-spacing-tight;
+  }
+  
+  .stat-change {
+    display: flex;
+    align-items: center;
+    gap: $gap-xs;
+    margin-top: $spacing-2;
+    font-size: $font-sm;
+    font-weight: $font-weight-semibold;
+    
+    &.positive {
+      color: $success;
+    }
+    
+    &.negative {
+      color: $error;
+    }
   }
 }
