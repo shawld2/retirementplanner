@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject, input } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, input } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -30,7 +29,6 @@ import { CustomInputComponent } from '../../shared/custom-input/custom-input.com
 })
 export class DrawdownPlanComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = input.required<FormGroup>();
   readonly sourceOptions = input.required<Array<{ id: string; label: string }>>();
@@ -57,15 +55,6 @@ export class DrawdownPlanComponent {
 
   ngOnInit(): void {
     this.sortAllByAge();
-    this.lumpSums.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.sortArrayByAge(this.lumpSums));
-    this.futureContributions.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.sortArrayByAge(this.futureContributions));
-    this.drawdownSchedule.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.sortArrayByAge(this.drawdownSchedule));
   }
 
   get lumpSums(): FormArray<FormGroup> {
@@ -94,7 +83,6 @@ export class DrawdownPlanComponent {
         lisaMonthsOpen: this.fb.control(0, [Validators.min(0)]),
       }),
     );
-    this.sortArrayByAge(this.lumpSums);
   }
 
   addDrawdownRow(): void {
@@ -105,7 +93,6 @@ export class DrawdownPlanComponent {
         fromSource: this.fb.control('proportional', [Validators.required]),
       }),
     );
-    this.sortArrayByAge(this.drawdownSchedule);
   }
 
   addFutureContribution(): void {
@@ -118,7 +105,6 @@ export class DrawdownPlanComponent {
         toSource: this.fb.control('any', [Validators.required]),
       }),
     );
-    this.sortArrayByAge(this.futureContributions);
   }
 
   remove(arr: FormArray<FormGroup>, index: number): void {

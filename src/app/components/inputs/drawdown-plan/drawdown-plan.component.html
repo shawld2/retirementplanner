@@ -1,5 +1,10 @@
 <section class="section" [formGroup]="form()">
-  <h2>Drawdown Plan</h2>
+  <div class="section-header">
+    <h2>Drawdown Plan</h2>
+    <button mat-stroked-button type="button" (click)="sortAllByAge()" title="Reorder all sections by age">
+      ↕ Reorder by Age
+    </button>
+  </div>
 
   <div class="subhead">
     <h3>Lump Sums</h3>
