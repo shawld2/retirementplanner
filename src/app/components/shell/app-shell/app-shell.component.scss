@@ -131,11 +131,11 @@
   box-sizing: border-box;
 
   @media (min-width: $breakpoint-md) {
-    padding: $padding-2xl $padding-lg;
+    padding: $padding-2xl 0px;
   }
 
   @media (min-width: $breakpoint-lg) {
-    padding: $padding-2xl $padding-xl;
+    padding: $padding-2xl 0px;
   }
 }
 
@@ -464,6 +464,10 @@
   }
 
   :host ::ng-deep .mat-step-label {
-    font-size: $font-xs;
+    display: none !important;
+  }
+
+  :host ::ng-deep .mat-step-header {
+    padding: 0 $spacing-2 !important;
   }
 }
