@@ -63,6 +63,8 @@ export interface ProjectionSettings {
   returnScenario: ReturnScenario;
   returnRates: { low: number; medium: number; high: number };
   applyPCLSLimit: boolean;
+  /** Minimum pension access age (NMPA). DC pots can be accessed for lump sums from this age even before retirement. Defaults to 57. */
+  pensionAccessAge: number;
   drawdownPriority: DrawdownPriority;
   /** Percentage of required drawdown allocated to me when partner is included (0-100). */
   drawdownSplitToMePercent: number;

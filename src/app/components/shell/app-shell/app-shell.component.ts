@@ -99,6 +99,7 @@ export class AppShellComponent implements OnDestroy {
         high: this.fb.control(7, [Validators.required, Validators.min(0), Validators.max(100)]),
       }),
       applyPCLSLimit: this.fb.control(false, [Validators.required]),
+      pensionAccessAge: this.fb.control(57, [Validators.required, Validators.min(50), Validators.max(75)]),
       drawdownAmountsAreNet: this.fb.control(false),
       monteCarloRuns: this.fb.control(500, [Validators.required, Validators.min(100), Validators.max(5000)]),
       monteCarloVolatilityPercent: this.fb.control(12, [Validators.required, Validators.min(0), Validators.max(80)]),
@@ -415,6 +416,7 @@ export class AppShellComponent implements OnDestroy {
           high: Number((settings.returnRates as { high: number }).high),
         },
         applyPCLSLimit: !!settings.applyPCLSLimit,
+        pensionAccessAge: Math.min(75, Math.max(50, Number(settings.pensionAccessAge ?? 57))),
         drawdownPriority:
           settings.drawdownPriority === 'isa-first' ? 'isa-first' : 'pension-first',
         drawdownSplitToMePercent: Math.min(

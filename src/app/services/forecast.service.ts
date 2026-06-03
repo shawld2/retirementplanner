@@ -754,6 +754,7 @@ export class ForecastService {
     meAge: number,
     partnerAge: number | undefined,
   ): LiquidPotState[] {
+    const pensionAccessAge = inputs.settings.pensionAccessAge ?? 57;
     return pots.filter((pot) => {
       if (pot.balance <= 0) {
         return false;
@@ -764,14 +765,15 @@ export class ForecastService {
       }
 
       if (pot.owner === 'me') {
-        return meAge >= inputs.me.retirementAge;
+        return meAge >= Math.min(pensionAccessAge, inputs.me.retirementAge);
       }
 
       if (!inputs.partner || partnerAge === undefined) {
         return false;
       }
 
-      return partnerAge >= inputs.partner.retirementAge;
+      const partnerPensionAccessAge = pensionAccessAge;
+      return partnerAge >= Math.min(partnerPensionAccessAge, inputs.partner.retirementAge);
     });
   }
 

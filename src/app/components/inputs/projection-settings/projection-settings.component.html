@@ -117,6 +117,12 @@
         <mat-button-toggle value="isa-first">ISA First</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
+
+    <div class="toggle-card">
+      <label class="label">Minimum pension access age</label>
+      <p class="split-hint">DC pensions can be accessed for lump sums from this age, even before your retirement age. UK NMPA is 57 from 2028.</p>
+      <app-custom-input type="number" formControlName="pensionAccessAge"></app-custom-input>
+    </div>
   </div>
 
   @if (includePartner()) {
